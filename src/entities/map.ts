@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { TILE_SIZE } from '../config';
 import { Tile } from './tile';
 
 export class Map {
@@ -19,7 +20,15 @@ export class Map {
         });
 
         const tileset = this.tilemap.addTilesetImage('Artboard 1', 'terrain');
-        this.tilemap.createLayer('Tile Layer 1', tileset);
+        const tileLayer = this.tilemap.createLayer('Tile Layer 1', tileset);
+
+        tileLayer.layer.data.forEach(row => {
+            row.forEach(tile => {
+                tile.tint = 0x333333;
+            });
+        });
+
+        //
     }
 
     getValidMovePositions(pos: Phaser.Types.Math.Vector2Like): ValidMovePositions {
@@ -61,6 +70,14 @@ export class Map {
         const tile = this.tilemap.getTileAt(b.x, b.y);
         return tile.properties.walkable;
     }
+
+    playerEnterredTile(position: Phaser.Types.Math.Vector2Like): void {
+        //this.tilemap.layer.data[position.x][position.y].tint = 0xffffff;
+        const tiles = this.tilemap.getTilesWithinShape(new Phaser.Geom.Rectangle(position.x - 1, position.y - 1, 3 * TILE_SIZE, 3 * TILE_SIZE));
+        tiles.forEach(tile => tile.tint = 0xffffff);
+    }
+
+    
 }
 
 export interface ValidMovePositions {

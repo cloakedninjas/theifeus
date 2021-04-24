@@ -101,8 +101,10 @@ export class Game extends Scene {
     if (this.moveMinigame.bg.visible && this.moveMinigame.tween.isPlaying) {
       const quietMove = this.moveMinigame.stop();
 
-      console.log(quietMove ? 'Quietly' : 'Loudly');
-      this.player.moveTo(this.requestedMoveLocation, quietMove ? MOVE_TIME_QUIET : MOVE_TIME_LOUD);
+      //console.log(quietMove ? 'Quietly' : 'Loudly');
+
+      this.player.moveTo(this.requestedMoveLocation, quietMove ? MOVE_TIME_QUIET : MOVE_TIME_LOUD)
+        .on('complete', () => this.map.playerEnterredTile(this.requestedMoveLocation));
     }
   }
 

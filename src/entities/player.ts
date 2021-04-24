@@ -11,13 +11,13 @@ export class Player extends GameObjects.Sprite {
         this.tilePosition = { x: 0, y: 0 };
     }
 
-    moveTo(newPosition: Phaser.Types.Math.Vector2Like, speed: number): void {
+    moveTo(newPosition: Phaser.Types.Math.Vector2Like, speed: number): Phaser.Tweens.Tween {
         const screenPos = {
             x: TILE_SIZE * newPosition.x + HALF_TILE_SIZE,
             y: TILE_SIZE * newPosition.y + HALF_TILE_SIZE
         };
 
-        this.scene.tweens.add({
+        return this.scene.tweens.add({
             targets: this,
             x: screenPos.x,
             y: screenPos.y,

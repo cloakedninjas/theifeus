@@ -16,7 +16,7 @@ export class Tile {
     render(x: number, y: number): void {
         const graphics = this.scene.add.graphics();
 
-        graphics.lineStyle(1, 0x00ff00);
+        graphics.lineStyle(1, 0x4433ff);
 
         if (this.walls[0]) {
             graphics.lineBetween(x, y, x + TILE_SIZE, y);

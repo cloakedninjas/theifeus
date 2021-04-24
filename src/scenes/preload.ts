@@ -44,6 +44,10 @@ export default class Preload extends Scene {
         }
       });
     });
+
+    this.load.image('terrain', 'assets/map/Artboard 1.png');
+    this.load.tilemapTiledJSON('terrain', 'assets/map/dj-test.json');
+
   }
 
   create(): void {

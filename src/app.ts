@@ -5,7 +5,6 @@ import { Game as GameScene } from './scenes/game';
 
 const config: Phaser.Types.Core.GameConfig = {
   title: 'Demo Game',
-
   scene: [Boot, Preload, GameScene],
   backgroundColor: '#333',
   scale: {

@@ -1,6 +1,5 @@
 import { Scene } from 'phaser';
-
-export const TILE_SIZE = 64;
+import { TILE_SIZE } from '../config';
 
 export class Tile {
     walls: number[];
@@ -33,5 +32,9 @@ export class Tile {
         if (this.walls[3]) {
             graphics.lineBetween(x, y + TILE_SIZE, x, y);
         }
+    }
+
+    isWalkable(): boolean {
+        return true;
     }
 }

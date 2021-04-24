@@ -1,13 +1,15 @@
 import { Scene } from 'phaser';
-import { TILE_SIZE } from '../config';
+import { MOVE_TIME_LOUD, MOVE_TIME_QUIET, TILE_SIZE } from '../config';
 import { Map } from '../entities/map';
 import { Player } from '../entities/player';
+import { MoveMinigame } from '../entities/move-minigame';
 
 export class Game extends Scene {
-  map: Map;
-  player: Player;
-  controls: Phaser.Cameras.Controls.FixedKeyControl;
-  selectionMarker: Phaser.GameObjects.Graphics;
+  private map: Map;
+  private player: Player;
+  private controls: Phaser.Cameras.Controls.FixedKeyControl;
+  private moveMinigame: MoveMinigame;
+  private requestedMoveLocation: Phaser.Types.Math.Vector2Like;
 
   constructor() {
     super({
@@ -25,6 +27,8 @@ export class Game extends Scene {
     this.setupCameraControls();
     //this.setupMouseControls();
     this.setupKeyboardControls();
+
+    this.moveMinigame = new MoveMinigame(this);
   }
 
   update() {
@@ -43,6 +47,11 @@ export class Game extends Scene {
     cursors.up.on('up', () => this.tryMovingPlayer(0, -1));
     cursors.left.on('up', () => this.tryMovingPlayer(-1, 0));
     cursors.right.on('up', () => this.tryMovingPlayer(1, 0));
+    cursors.space.on('up', () => this.performAction());
+
+    this.input.on('pointerup', () => {
+      //console.log(this.map.getValidMovePositions(this.player.tilePosition));
+    });
   }
 
   /* private setupMouseControls() {
@@ -75,14 +84,25 @@ export class Game extends Scene {
     });
   } */
 
-  private tryMovingPlayer(x: number, y: number): void {
+  private tryMovingPlayer(vectorX: number, vectorY: number): void {
     const destinationPosition: Phaser.Types.Math.Vector2Like = {
-      x: this.player.tilePosition.x + x,
-      y: this.player.tilePosition.y + y
+      x: this.player.tilePosition.x + vectorX,
+      y: this.player.tilePosition.y + vectorY
     };
 
     if (this.map.isMoveValid(this.player.tilePosition, destinationPosition)) {
-      this.player.moveTo(x, y);
+      this.requestedMoveLocation = destinationPosition;
+      this.moveMinigame.start();
+      //this.player.moveTo(x, y);
+    }
+  }
+
+  private performAction(): void {
+    if (this.moveMinigame.bg.visible && this.moveMinigame.tween.isPlaying) {
+      const quietMove = this.moveMinigame.stop();
+
+      console.log(quietMove ? 'Quietly' : 'Loudly');
+      this.player.moveTo(this.requestedMoveLocation, quietMove ? MOVE_TIME_QUIET : MOVE_TIME_LOUD);
     }
   }
 

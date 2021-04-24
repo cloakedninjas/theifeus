@@ -1,5 +1,5 @@
 import { GameObjects, Scene } from 'phaser';
-import { MOVE_TIME_LOUD, MOVE_TIME_QUIET, TILE_SIZE } from '../config';
+import { HALF_TILE_SIZE, TILE_SIZE } from '../config';
 
 export class Player extends GameObjects.Sprite {
 
@@ -11,28 +11,20 @@ export class Player extends GameObjects.Sprite {
         this.tilePosition = { x: 0, y: 0 };
     }
 
-    moveTo(x: number, y: number): void {
-        let newX = this.x
-        let newY = this.y;
-
-        if (x) {
-            newX += (TILE_SIZE * x);
-        }
-
-        if (y) {
-            newY += (TILE_SIZE * y);
-        }
+    moveTo(newPosition: Phaser.Types.Math.Vector2Like, speed: number): void {
+        const screenPos = {
+            x: TILE_SIZE * newPosition.x + HALF_TILE_SIZE,
+            y: TILE_SIZE * newPosition.y + HALF_TILE_SIZE
+        };
 
         this.scene.tweens.add({
             targets: this,
-            x: newX,
-            y: newY,
+            x: screenPos.x,
+            y: screenPos.y,
             ease: Phaser.Math.Easing.Sine.InOut,
-            duraton: MOVE_TIME_LOUD,
+            duraton: speed,
             onComplete: () => {
-                const newX = this.tilePosition.x + x || 0;
-                const newY = this.tilePosition.y + y || 0;
-                this.setTilePosition(newX, newY);
+                this.setTilePosition(newPosition.x, newPosition.y);
             }
         });
     }
@@ -41,8 +33,8 @@ export class Player extends GameObjects.Sprite {
         this.tilePosition.x = x;
         this.tilePosition.y = y;
 
-        this.x = x * TILE_SIZE + (TILE_SIZE / 2);
-        this.y = y * TILE_SIZE + (TILE_SIZE / 2);
+        this.x = x * TILE_SIZE + HALF_TILE_SIZE;
+        this.y = y * TILE_SIZE + HALF_TILE_SIZE;
     }
 
 }

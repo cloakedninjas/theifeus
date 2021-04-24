@@ -22,6 +22,15 @@ export class Map {
         this.tilemap.createLayer('Tile Layer 1', tileset);
     }
 
+    getValidMovePositions(pos: Phaser.Types.Math.Vector2Like): ValidMovePositions {
+        return {
+            n: this.tilemap.getTileAt(pos.x, pos.y - 1)?.properties.walkable,
+            e: this.tilemap.getTileAt(pos.x + 1, pos.y)?.properties.walkable,
+            s: this.tilemap.getTileAt(pos.x, pos.y + 1)?.properties.walkable,
+            w: this.tilemap.getTileAt(pos.x - 1, pos.y)?.properties.walkable
+        };
+    }
+
     isMoveValid(a: Phaser.Types.Math.Vector2Like, b: Phaser.Types.Math.Vector2Like): boolean {
         const vDist = Math.abs(a.y - b.y);
         const hDist = Math.abs(a.x - b.x);
@@ -52,4 +61,11 @@ export class Map {
         const tile = this.tilemap.getTileAt(b.x, b.y);
         return tile.properties.walkable;
     }
+}
+
+export interface ValidMovePositions {
+    n: boolean;
+    e: boolean;
+    s: boolean;
+    w: boolean;
 }

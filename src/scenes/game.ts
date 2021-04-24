@@ -1,6 +1,11 @@
 import { Scene } from 'phaser';
+import { Map } from '../entities/map';
+import { Player } from '../entities/player';
 
 export class Game extends Scene {
+  map: Map;
+  player: Player;
+
   constructor() {
     super({
       key: 'GameScene'
@@ -8,7 +13,12 @@ export class Game extends Scene {
   }
 
   create(): void {
-    const image = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'phaser_logo');
-    image.setOrigin(0.5);
+    const map = new Map(this);
+    this.map = this.add.existing(map);
+
+    const player = new Player(this);
+    player.setOrigin(0, 0);
+    this.player = this.add.existing(player);
+    this.player.setTilePosition(0, 0);
   }
 }

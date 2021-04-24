@@ -10,10 +10,6 @@
             "player": {
                 "file": "player.png",
                 "size": 185
-            },
-            "map": {
-                "file": "map.png",
-                "size": 4410
             }
         },
         "json": {

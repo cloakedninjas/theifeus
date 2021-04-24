@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { TILE_SIZE } from '../config';
+import { CELL_PER_TILE, TILE_SIZE } from '../config';
 import { Tile } from './tile';
 
 export class Map {
@@ -16,11 +16,11 @@ export class Map {
         this.scene = scene;
 
         this.tilemap = this.scene.make.tilemap({
-            key: 'terrain'
+            key: 'labyrinth-tiles'
         });
 
-        const tileset = this.tilemap.addTilesetImage('Artboard 1', 'terrain');
-        const tileLayer = this.tilemap.createLayer('Tile Layer 1', tileset);
+        const tileset = this.tilemap.addTilesetImage('labyrinth-tiles', 'labyrinth-tiles');
+        const tileLayer = this.tilemap.createLayer('Map-2', tileset);
 
         tileLayer.layer.data.forEach(row => {
             row.forEach(tile => {
@@ -41,43 +41,66 @@ export class Map {
     }
 
     isMoveValid(a: Phaser.Types.Math.Vector2Like, b: Phaser.Types.Math.Vector2Like): boolean {
-        const vDist = Math.abs(a.y - b.y);
-        const hDist = Math.abs(a.x - b.x);
+        const north = b.y === a.y - 1;
+        const east = b.x === a.x + 1;
+        const south = b.y === a.y + 1;
+        const west = b.x === a.x - 1;
 
-        if (vDist > 1 || hDist > 1) {
-            // not adjacent
-            return false;
+        let cell1;
+        let cell2;
+
+        if (north) {
+            cell1 = this.tilemap.getTileAt((a.x * CELL_PER_TILE) + 1, (a.y * CELL_PER_TILE));
+            cell2 = this.tilemap.getTileAt((b.x * CELL_PER_TILE) + 1, (b.y * CELL_PER_TILE) + 2);
+
+            /* cell1.tint = 0xff0000;
+            cell2.tint = 0xff0000; */
+
+            return cell1.index === cell2.index && cell1.index === 7;
         }
 
-        if (vDist === 0 && hDist === 0) {
-            // same tile
-            return false;
-        }
+        //const tile = this.tilemap.getTileAt(b.x, b.y);
+        //return tile.properties.walkable;
 
-        const left = b.x === a.x - 1;
-        const right = b.x === a.x + 1;
-        const top = b.y === a.y - 1;
-        const bottom = b.y === a.y + 1;
-
-        const vert = top || bottom;
-        const horiz = left || right;
-
-        if (horiz && vert) {
-            // diagonal
-            return false;
-        }
-
-        const tile = this.tilemap.getTileAt(b.x, b.y);
-        return tile.properties.walkable;
+        return false;
     }
 
     playerEnterredTile(position: Phaser.Types.Math.Vector2Like): void {
-        //this.tilemap.layer.data[position.x][position.y].tint = 0xffffff;
-        const tiles = this.tilemap.getTilesWithinShape(new Phaser.Geom.Rectangle(position.x - 1, position.y - 1, 3 * TILE_SIZE, 3 * TILE_SIZE));
+        const tiles = this.getCellsAtTile(position);
         tiles.forEach(tile => tile.tint = 0xffffff);
     }
 
-    
+    getTileAt(position: Phaser.Types.Math.Vector2Like): Phaser.Tilemaps.Tile {
+        return this.tilemap.getTileAt(position.x, position.y);
+    }
+
+    getCentreCellAtTile(position: Phaser.Types.Math.Vector2Like): Phaser.Tilemaps.Tile {
+        const centreCell = {
+            x: (position.x * CELL_PER_TILE) + 1,
+            y: (position.y * CELL_PER_TILE) + 1
+        };
+
+        return this.tilemap.getTileAt(centreCell.x, centreCell.y);
+    }
+
+    getCellsAtTile(position: Phaser.Types.Math.Vector2Like): Phaser.Tilemaps.Tile[] {
+        const centreCell = {
+            x: (position.x * CELL_PER_TILE) + 1,
+            y: (position.y * CELL_PER_TILE) + 1
+        };
+
+        return [
+            this.tilemap.getTileAt(centreCell.x - 1, centreCell.y - 1),
+            this.tilemap.getTileAt(centreCell.x, centreCell.y - 1),
+            this.tilemap.getTileAt(centreCell.x + 1, centreCell.y - 1),
+            this.tilemap.getTileAt(centreCell.x - 1, centreCell.y),
+            this.tilemap.getTileAt(centreCell.x, centreCell.y),
+            this.tilemap.getTileAt(centreCell.x + 1, centreCell.y),
+            this.tilemap.getTileAt(centreCell.x - 1, centreCell.y + 1),
+            this.tilemap.getTileAt(centreCell.x, centreCell.y + 1),
+            this.tilemap.getTileAt(centreCell.x + 1, centreCell.y + 1)
+        ];
+    }
 }
 
 export interface ValidMovePositions {

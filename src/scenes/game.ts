@@ -4,7 +4,7 @@ import { Map } from '../entities/map';
 import { Minotaur } from '../entities/minotaur';
 import { Player } from '../entities/player';
 import { NoiseMeter } from '../entities/noise-meter';
-import { HideTimer } from '../entities/hide-timer';
+import { HuntedUI } from '../entities/hunted-ui';
 
 const ARROW_FRAME_ACTIVE = 0;
 const ARROW_FRAME_DISABLED = 2;
@@ -23,7 +23,7 @@ export class Game extends Scene {
   private treasureCollected: Treasure[] = [];
   playerMoveTween: Phaser.Tweens.Tween;
   canMove = true;
-  hideUI: HideTimer;
+  huntedUI: HuntedUI;
   ui: Phaser.GameObjects.Image;
   arrows: { n: Phaser.GameObjects.Sprite; e: Phaser.GameObjects.Sprite; s: Phaser.GameObjects.Sprite; w: Phaser.GameObjects.Sprite; };
   searchButton: Phaser.GameObjects.Image;
@@ -111,7 +111,7 @@ export class Game extends Scene {
 
     this.input.on('pointerup', () => {
       //this.searchRoom();
-      //this.showCombatUI();
+      this.showHuntedUI();
     });
   }
 
@@ -235,13 +235,13 @@ export class Game extends Scene {
   }
 
   private performAction(): void {
-    if (this.hideUI) {
+    if (this.huntedUI) {
       const isQuiet = this.noiseMeter.getNoiseReading();
 
       if (isQuiet) {
-        this.hideUI.addTime();
+        this.huntedUI.addTime();
       } else {
-        this.hideUI.removeTime();
+        this.huntedUI.removeTime();
       }
     }
   }
@@ -288,7 +288,7 @@ export class Game extends Scene {
 
           this.minotaur.setTilePosition(this.playerTileHistory[i].x, this.playerTileHistory[i].y);
           this.minotaur.startFollow(this.playerTileHistory.slice(i + 1));
-          this.minotaur.attacking.on('attacking', this.showCombatUI, this);
+          this.minotaur.attacking.on('attacking', this.showHuntedUI, this);
           break;
         }
       }
@@ -301,21 +301,21 @@ export class Game extends Scene {
     }
   }
 
-  private showCombatUI(): void {
+  private showHuntedUI(): void {
     this.canMove = false;
-    this.hideUI = new HideTimer(this);
+    this.huntedUI = new HuntedUI(this);
 
-    this.hideUI.result.on('success', () => {
-      this.hideUI.destroy();
-      this.hideUI = null;
+    this.huntedUI.result.on('success', () => {
+      this.huntedUI.destroy();
+      this.huntedUI = null;
       this.noiseMeter.reset();
       this.canMove = true;
       this.minotaurWalkAway();
     });
 
-    this.hideUI.result.on('fail', () => {
-      this.hideUI.destroy();
-      this.hideUI = null;
+    this.huntedUI.result.on('fail', () => {
+      this.huntedUI.destroy();
+      this.huntedUI = null;
 
       console.log('GAME OVER');
     });

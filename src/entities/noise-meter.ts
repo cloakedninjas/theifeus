@@ -64,7 +64,7 @@ export class NoiseMeter {
 
     start(): void {
         //bg
-        this.bg.fillStyle(0xcc0000);
+        this.bg.fillStyle(0xC2B59B);
         this.bg.fillRect(this.left, this.y, WIDTH, HEIGHT);
 
         // safe zone
@@ -72,7 +72,7 @@ export class NoiseMeter {
         this.safeArea.min = Phaser.Math.Between(this.left, this.right - safeWidth);
         this.safeArea.max = this.safeArea.min + safeWidth;
 
-        this.bg.fillStyle(0x00cc00);
+        this.bg.fillStyle(0x00A651);
         this.bg.fillRect(this.safeArea.min, this.y, safeWidth, HEIGHT);
 
         this.tween = this.scene.tweens.add({

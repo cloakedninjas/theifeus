@@ -1,11 +1,11 @@
 {
     "assetRoot": "assets",
-    "totalSize": 469755,
+    "totalSize": 550875,
     "assets": {
         "image": {
             "player": {
                 "file": "player.png",
-                "size": 185
+                "size": 2430
             },
             "minotaur": {
                 "file": "minotaur.png",
@@ -17,11 +17,11 @@
             },
             "search": {
                 "file": "search.png",
-                "size": 17992
+                "size": 18959
             },
             "main_ui": {
                 "file": "main_ui.png",
-                "size": 29103
+                "size": 29302
             },
             "silent": {
                 "file": "silent.png",
@@ -30,6 +30,22 @@
             "marker": {
                 "file": "marker.png",
                 "size": 253
+            },
+            "monster_face": {
+                "file": "monster_face.png",
+                "size": 1330
+            },
+            "hunted": {
+                "file": "hunted.png",
+                "size": 19638
+            },
+            "monster": {
+                "file": "monster.png",
+                "size": 3378
+            },
+            "red_mist": {
+                "file": "red_mist.png",
+                "size": 1593
             }
         },
         "json": {
@@ -45,6 +61,14 @@
                 "frameConfig": {
                     "frameWidth": 48,
                     "frameHeight": 68
+                }
+            },
+            "hide": {
+                "file": "hide.png",
+                "size": 4490,
+                "frameConfig": {
+                    "frameWidth": 185,
+                    "frameHeight": 60
                 }
             }
         }

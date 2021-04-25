@@ -1,9 +1,8 @@
 import { GameObjects, Math, Scene, Tweens } from 'phaser';
-import { NOISE_MARKER_SPEED, NOISE_MOVE_LOUD, NOISE_MOVE_QUIET, NOISE_SPAWN_MINOTAUR } from '../config';
+import { NOISE_MARKER_SPEED, NOISE_MOVE_LOUD, NOISE_MOVE_QUIET, NOISE_SAFE_WIDTH, NOISE_SPAWN_MINOTAUR } from '../config';
 
 const WIDTH = 300;
 const HEIGHT = 35;
-const PADDLE_WIDTH = 10;
 
 export class NoiseMeter {
     scene: Scene;
@@ -21,6 +20,7 @@ export class NoiseMeter {
         min: 0,
         max: 0
     };
+    safeWidth: number = NOISE_SAFE_WIDTH;
     noiseLevel = 0;
     noiseThreshold: Phaser.Events.EventEmitter;
     thresholdReached = false;
@@ -68,12 +68,11 @@ export class NoiseMeter {
         this.bg.fillRect(this.left, this.y, WIDTH, HEIGHT);
 
         // safe zone
-        const safeWidth = 50;
-        this.safeArea.min = Phaser.Math.Between(this.left, this.right - safeWidth);
-        this.safeArea.max = this.safeArea.min + safeWidth;
+        this.safeArea.min = Phaser.Math.Between(this.left, this.right - this.safeWidth);
+        this.safeArea.max = this.safeArea.min + this.safeWidth;
 
         this.bg.fillStyle(0x00A651);
-        this.bg.fillRect(this.safeArea.min, this.y, safeWidth, HEIGHT);
+        this.bg.fillRect(this.safeArea.min, this.y, this.safeWidth, HEIGHT);
 
         this.tween = this.scene.tweens.add({
             targets: this.paddle,
@@ -134,7 +133,7 @@ export class NoiseMeter {
         this.tween.stop();
         const x = this.paddle.x + this.left;
 
-        return x > this.safeArea.min && x < this.safeArea.max - PADDLE_WIDTH;
+        return x > this.safeArea.min && x < this.safeArea.max - this.paddle.width;
     }
 
     hide(): void {

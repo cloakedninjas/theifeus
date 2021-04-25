@@ -14,7 +14,8 @@ export class Game extends Scene {
   private requestedMoveLocation: Phaser.Types.Math.Vector2Like;
   private playerTileHistory: Phaser.Types.Math.Vector2Like[] = [];
   private playerMemory: Phaser.Types.Math.Vector2Like[] = [];
-  private treasureCollected = 0;
+  private treasures: Treasure[] = [];
+  private treasureCollected: Treasure[] = [];
   playerMoveTween: Phaser.Tweens.Tween;
   canMove = true;
   hideUI: HideTimer;
@@ -27,6 +28,11 @@ export class Game extends Scene {
 
   create(): void {
     this.map = new Map(this);
+
+    this.treasures = this.cache.json.get('treasures');
+    const diamond = this.treasures.pop();
+    Phaser.Utils.Array.Shuffle(this.treasures);
+    this.treasures.push(diamond);
 
     const player = new Player(this, this.map);
     this.player = this.add.existing(player);
@@ -79,6 +85,8 @@ export class Game extends Scene {
 
     if (this.map.isExiting(this.player.tilePosition, destinationPosition)) {
       console.log('is exit');
+      // prompt to leave
+      return;
     }
 
     if (this.map.isWalkableTile(destinationPosition)) {
@@ -101,6 +109,12 @@ export class Game extends Scene {
     this.playerTileHistory.push({
       ...pos
     });
+
+    const treasure = this.map.hasTreasure(pos);
+
+    if (treasure) {
+      console.log('show Search UI');
+    }
 
     // only keep 20 tiles in history
     if (this.playerTileHistory.length > 20) {
@@ -227,4 +241,11 @@ export class Game extends Scene {
     this.minotaur.destroy();
     this.minotaur = null;
   }
+}
+
+interface Treasure {
+  name: string;
+  description: string;
+  noise: number;
+  value: number;
 }

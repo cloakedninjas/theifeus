@@ -1,0 +1,98 @@
+[
+	{
+		"name": "Old bronze coin",
+		"description": "An ancient coin with a Minotaur's head stamped on one side. Heads or tails if I get in trouble for taking this.",
+		"noise": 1,
+		"value": 50
+	},
+	{
+		"name": "Intricate bowl",
+		"description": "It's a small, engraved clay bowl painted with labyrinthine patterns.",
+		"noise": 1,
+		"value": 50
+	},
+	{
+		"name": "An old shoe",
+		"description": "If the shoe fits... I'd hope to find the other one to make a pair.",
+		"noise": 1,
+		"value": 50
+	},
+	{
+		"name": "Skeletal remains",
+		"description": "There's something eerily familiar about this old adventurer...",
+		"noise": 1,
+		"value": 50
+	},
+	{
+		"name": "Pouch",
+		"description": "A hand-stitched, embroidered coin purse.",
+		"noise": 1,
+		"value": 50
+	},
+	{
+		"name": "Plate",
+		"description": "A beautifully preserved dinner plate, with a golden rim.",
+		"noise": 2,
+		"value": 75
+	},
+	{
+		"name": "Jewel-encrusted spoon",
+		"description": "A rather garish soup scooping implement. Not for use with everyday soups, of course.",
+		"noise": 2,
+		"value": 75
+	},
+	{
+		"name": "Old silver coin",
+		"description": "People say I have the gift of a silver tongue. I'd much prefer the gift of a silver coin!",
+		"noise": 2,
+		"value": 75
+	},
+	{
+		"name": "Board game",
+		"description": "Looks like it's for two players. I wonder if I could tempt the Minotaur to play a round...",
+		"noise": 2,
+		"value": 75
+	},
+	{
+		"name": "Old gold coin",
+		"description": "It's definitely not pyrite! I'd be a fool NOT to take it!",
+		"noise": 3,
+		"value": 150
+	},
+	{
+		"name": "Chalice",
+		"description": "It's face-meltingly gorgeous!",
+		"noise": 3,
+		"value": 150
+	},
+	{
+		"name": "Royal mantle",
+		"description": "A weighty mantle of silk and gold cloth.",
+		"noise": 3,
+		"value": 150
+	},
+	{
+		"name": "Old platinum coin",
+		"description": "An ancient platinum coin! Enough for a downpayment on that house I've been after!",
+		"noise": 4,
+		"value": 250
+	},
+	{
+		"name": "Scepter",
+		"description": "An elaborate golden scepter.",
+		"noise": 4,
+		"value": 250
+	},
+	{
+		"name": "Crown",
+		"description": "A bejewelled headpiece fit for royalty!",
+		"noise": 5,
+		"value": 500
+	},
+	{
+		"name": "Heart of the Minotaur",
+		"description": "The fabled jewel of the Minotaur's labyrinth. Doom awaits whomsoever should claim it. On the other hand, so do fame and fortune so I'll take my chances!",
+		"noise": 6,
+		"value": 3000
+	}
+]

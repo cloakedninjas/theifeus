@@ -1,8 +1,11 @@
 export const CELL_PER_TILE = 3;
 export const TILE_SIZE = 32;
 export const HALF_TILE_SIZE = TILE_SIZE / 2;
+
 export const CELL_WALKABLE = 10;
 export const CELL_EXIT = 21;
+export const CELL_TREASURE = 22;
+export const CELL_DIAMOND = 8;
 
 export const MOVE_TIME_QUIET = 500;
 export const MOVE_TIME_LOUD = 300;

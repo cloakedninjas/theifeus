@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { CELL_EXIT, CELL_PER_TILE, CELL_WALKABLE } from '../config';
+import { CELL_DIAMOND, CELL_EXIT, CELL_PER_TILE, CELL_TREASURE, CELL_WALKABLE } from '../config';
 import { Tile } from './tile';
 
 export class Map {
@@ -11,6 +11,8 @@ export class Map {
         height: number;
     }
     exits: Phaser.Tilemaps.Tile[] = [];
+    treasures: Phaser.Tilemaps.Tile[] = [];
+    diamond: Phaser.Tilemaps.Tile;
 
     constructor(scene: Scene) {
         this.scene = scene;
@@ -30,10 +32,17 @@ export class Map {
 
         const roomLayer = this.tilemap.createLayer('rooms-1', tileset);
 
+        // extract room items
         roomLayer.layer.data.forEach(row => {
             row.forEach(tile => {
                 if (tile.index === CELL_EXIT) {
                     this.exits.push(tile);
+                } else if (tile.index === CELL_TREASURE) {
+                    this.treasures.push(tile);
+
+                    this.tilemap.getTileAt(tile.x, tile.y).properties.foo = 'asda';
+                } else if (tile.index === CELL_DIAMOND) {
+                    this.diamond = tile;
                 }
             });
         });
@@ -72,6 +81,10 @@ export class Map {
         }
 
         return onExitTile && this.isEdgeTile(destinationPosition);
+    }
+
+    hasTreasure(pos: Phaser.Types.Math.Vector2Like): boolean {
+        return this.tilemap.getTileAt(pos.x, pos.y, true, 'rooms-1').index === CELL_TREASURE;
     }
 
     playerEnterredTile(position: Phaser.Types.Math.Vector2Like): void {

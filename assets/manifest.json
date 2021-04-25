@@ -1,1 +1,22 @@
-{"assetRoot":"assets","totalSize":386959,"assets":{"image":{"player":{"file":"player.png","size":185},"minotaur":{"file":"minotaur.png","size":262}},"json":{}}}
+{
+    "assetRoot": "assets",
+    "totalSize": 386959,
+    "assets": {
+        "image": {
+            "player": {
+                "file": "player.png",
+                "size": 185
+            },
+            "minotaur": {
+                "file": "minotaur.png",
+                "size": 262
+            }
+        },
+        "json": {
+            "treasures": {
+                "file": "treasure.json",
+                "size": 2450
+            }
+        }
+    }
+}

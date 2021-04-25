@@ -1,9 +1,10 @@
 import { Scene } from 'phaser';
-import { CELL_PER_TILE, MEMORY_FORGOT, MINOTAUR_MOVE_TIME, MOVE_TIME_LOUD, MOVE_TIME_QUIET, PROB_FIND_TREASURE } from '../config';
+import { CELL_PER_TILE, MEMORY_FORGOT, MOVE_TIME_LOUD, MOVE_TIME_QUIET } from '../config';
 import { Map } from '../entities/map';
 import { Minotaur } from '../entities/minotaur';
 import { Player } from '../entities/player';
 import { NoiseMeter } from '../entities/noise-meter';
+import { HideTimer } from '../entities/hide-timer';
 
 export class Game extends Scene {
   private map: Map;
@@ -16,6 +17,7 @@ export class Game extends Scene {
   private treasureCollected = 0;
   playerMoveTween: Phaser.Tweens.Tween;
   canMove = true;
+  hideUI: HideTimer;
 
   constructor() {
     super({
@@ -54,10 +56,11 @@ export class Game extends Scene {
     cursors.up.on('up', () => this.tryMovingPlayer(0, -1));
     cursors.left.on('up', () => this.tryMovingPlayer(-1, 0));
     cursors.right.on('up', () => this.tryMovingPlayer(1, 0));
-    //cursors.space.on('up', () => this.performAction());
+    cursors.space.on('up', () => this.performAction());
 
     this.input.on('pointerup', () => {
       //this.searchRoom();
+      //this.showCombatUI();
     });
   }
 
@@ -77,7 +80,7 @@ export class Game extends Scene {
         y: this.player.tilePosition.y + (vectorY * CELL_PER_TILE)
       };
 
-      const isQuiet = this.noiseMeter.makeNoise();
+      const isQuiet = this.noiseMeter.getNoiseReading();
       const noiseLevel = isQuiet ? MOVE_TIME_QUIET : MOVE_TIME_LOUD;
 
       this.playerMoveTween = this.player.moveTo(this.requestedMoveLocation, noiseLevel)
@@ -118,23 +121,23 @@ export class Game extends Scene {
         this.minotaur.followPath(pos);
       } else {
         if (!this.map.objectsAreAdjacent(this.player.tilePosition, this.minotaur.tilePosition)) {
-          this.minotaur.destroy();
-          this.minotaur = null;
+          this.minotaurWalkAway();
         }
       }
     }
   }
 
-  /* private performAction(): void {
-    if (this.noiseMeter.bg.visible && this.noiseMeter.tween.isPlaying) {
-      const quietMove = this.noiseMeter.stop();
+  private performAction(): void {
+    if (this.hideUI) {
+      const isQuiet = this.noiseMeter.getNoiseReading();
 
-      //console.log(quietMove ? 'Quietly' : 'Loudly');
-
-      this.player.moveTo(this.requestedMoveLocation, quietMove ? MOVE_TIME_QUIET : MOVE_TIME_LOUD)
-        .on('complete', () => this.map.playerEnterredTile(this.requestedMoveLocation));
+      if (isQuiet) {
+        this.hideUI.addTime();
+      } else {
+        this.hideUI.removeTime();
+      }
     }
-  } */
+  }
 
   /* private searchRoom(): void {
     const currentTile = this.map.getTileAt(this.player.tilePosition);
@@ -194,6 +197,26 @@ export class Game extends Scene {
 
   private showCombatUI(): void {
     this.canMove = false;
-    console.log('UI');
+    this.hideUI = new HideTimer(this);
+
+    this.hideUI.result.on('success', () => {
+      this.hideUI.destroy();
+      this.hideUI = null;
+      this.noiseMeter.reset();
+    });
+
+    this.hideUI.result.on('fail', () => {
+      this.hideUI.destroy();
+      this.hideUI = null;
+
+      console.log('GAME OVER');
+    });
+
+    this.noiseMeter.disableThresholds();
+  }
+
+  private minotaurWalkAway(): void {
+    this.minotaur.destroy();
+    this.minotaur = null;
   }
 }

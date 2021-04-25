@@ -21,6 +21,7 @@ export class NoiseMeter {
     noiseLevel = 0;
     noiseThreshold: Phaser.Events.EventEmitter;
     thresholdReached = false;
+    canEmit = true;
 
     constructor(scene: Scene) {
         this.scene = scene;
@@ -72,7 +73,7 @@ export class NoiseMeter {
         this.show();
     }
 
-    makeNoise(): boolean {
+    getNoiseReading(): boolean {
         const x = this.paddle.x + this.left;
         const isQuiet = x > this.safeArea.min && x < this.safeArea.max - PADDLE_WIDTH;
 
@@ -82,14 +83,14 @@ export class NoiseMeter {
             this.noiseLevel += NOISE_MOVE_LOUD;
         }
 
-        if (this.noiseLevel >= NOISE_SPAWN_MINOTAUR) {
-            console.log('NOISE HIGH');
-            this.noiseThreshold.emit('noise-high');
-            this.thresholdReached = true;
-        } else if (this.thresholdReached && this.noiseLevel < NOISE_SPAWN_MINOTAUR) {
-            console.log('NOISE LOW');
-            this.noiseThreshold.emit('noise-low');
-            this.thresholdReached = false;
+        if (this.canEmit) {
+            if (this.noiseLevel >= NOISE_SPAWN_MINOTAUR) {
+                this.noiseThreshold.emit('noise-high');
+                this.thresholdReached = true;
+            } else if (this.thresholdReached && this.noiseLevel < NOISE_SPAWN_MINOTAUR) {
+                this.noiseThreshold.emit('noise-low');
+                this.thresholdReached = false;
+            }
         }
 
         return isQuiet;
@@ -110,5 +111,19 @@ export class NoiseMeter {
     show(): void {
         this.bg.visible = true;
         this.paddle.visible = true;
+    }
+
+    disableThresholds(): void {
+        this.canEmit = false;
+    }
+
+    enableThresholds(): void {
+        this.canEmit = true;
+    }
+
+    reset(): void {
+        this.canEmit = true;
+        this.thresholdReached = false;
+        this.noiseLevel = 0;
     }
 }

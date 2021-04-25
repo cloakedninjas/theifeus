@@ -1,15 +1,15 @@
 import { Scene } from 'phaser';
-import { CELL_PER_TILE, MEMORY_FADE, MEMORY_FORGOT, MOVE_TIME_LOUD, MOVE_TIME_QUIET, PROB_FIND_TREASURE } from '../config';
+import { CELL_PER_TILE, MEMORY_FORGOT, MOVE_TIME_LOUD, MOVE_TIME_QUIET, PROB_FIND_TREASURE } from '../config';
 import { Map } from '../entities/map';
 import { Minotaur } from '../entities/minotaur';
 import { Player } from '../entities/player';
-import { MoveMinigame } from '../entities/move-minigame';
+import { NoiseMeter } from '../entities/noise-meter';
 
 export class Game extends Scene {
   private map: Map;
   private player: Player;
   private minotaur: Minotaur;
-  private moveMinigame: MoveMinigame;
+  private noiseMeter: NoiseMeter;
   private requestedMoveLocation: Phaser.Types.Math.Vector2Like;
   private playerTileHistory: Phaser.Types.Math.Vector2Like[] = [];
   private playerMemory: Phaser.Types.Math.Vector2Like[] = [];
@@ -30,14 +30,11 @@ export class Game extends Scene {
     this.player.setTilePosition(52, 58);
     this.playerMoved(this.player.tilePosition);
 
-    const minotaur = new Minotaur(this);
-    this.minotaur = this.add.existing(minotaur);
-    this.minotaur.setTilePosition(52, 55);
-
     this.setupCameraControls();
     this.setupKeyboardControls();
 
-    this.moveMinigame = new MoveMinigame(this);
+    this.noiseMeter = new NoiseMeter(this);
+    this.noiseMeter.minotaurAlerted.on('minotaur-alerted', this.summonMinotaur, this);
 
     // debug
     window['scene'] = this;
@@ -78,7 +75,8 @@ export class Game extends Scene {
         y: this.player.tilePosition.y + (vectorY * CELL_PER_TILE)
       };
 
-      const noiseLevel = this.moveMinigame.getNoiseLevel();
+      const isQuiet = this.noiseMeter.makeNoise();
+      const noiseLevel = isQuiet ? MOVE_TIME_QUIET : MOVE_TIME_LOUD;
 
       this.playerMoveTween = this.player.moveTo(this.requestedMoveLocation, noiseLevel)
         .on('complete', () => this.playerMoved(this.requestedMoveLocation));
@@ -112,34 +110,11 @@ export class Game extends Scene {
       const tileForgotten = this.playerMemory.shift();
       this.map.fadeFromMemory(tileForgotten, true);
     }
-
-    /* const memoryFadeTile = this.playerTileHistory[this.playerTileHistory.length - MEMORY_FADE];
-    const memoryForgotTile = this.playerTileHistory[this.playerTileHistory.length - MEMORY_FORGOT];
-
-    for (let i = 0; i < MEMORY_FORGOT; i++) {
-      const tile = this.playerTileHistory[this.playerTileHistory.length - i - 1];
-
-      if (!tile) {
-        break;
-      }
-
-      if (tile.x === pos.x && tile.y === pos.y) {
-        console.log('refresh?');
-      }
-    }
-
-    if (memoryFadeTile) {
-      this.map.fadeFromMemory(memoryFadeTile, false);
-
-      if (memoryForgotTile) {
-        this.map.fadeFromMemory(memoryForgotTile, true);
-      }
-    } */
   }
 
   private performAction(): void {
-    if (this.moveMinigame.bg.visible && this.moveMinigame.tween.isPlaying) {
-      const quietMove = this.moveMinigame.stop();
+    if (this.noiseMeter.bg.visible && this.noiseMeter.tween.isPlaying) {
+      const quietMove = this.noiseMeter.stop();
 
       //console.log(quietMove ? 'Quietly' : 'Loudly');
 
@@ -160,5 +135,33 @@ export class Game extends Scene {
     }
 
     currentTile.properties.searched = true;
+  }
+
+  private summonMinotaur(): void {
+    if (!this.minotaur) {
+      // try to spawn minotaur someplace in history, not currently in memory
+
+      for (let i = this.playerTileHistory.length - 1; i >= 0; i--) {
+        const tileHistory = this.playerTileHistory[i];
+        let tileVisisble = false;
+
+        for (let j = 0; j < this.playerMemory.length; j++) {
+          const playerMemory = this.playerMemory[j];
+
+          if (playerMemory.x === tileHistory.x && playerMemory.y === tileHistory.y) {
+            tileVisisble = true;
+            break;
+          }
+        }
+
+        if (!tileVisisble) {
+          console.error('I HEAR YOU!');
+          const minotaur = new Minotaur(this);
+          this.minotaur = this.add.existing(minotaur);
+          this.minotaur.setTilePosition(this.playerTileHistory[1].x, this.playerTileHistory[1].y);
+          break;
+        }
+      }
+    }
   }
 }

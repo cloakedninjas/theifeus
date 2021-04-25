@@ -1,10 +1,10 @@
 import { GameObjects, Math, Scene, Tweens } from 'phaser';
-import { MOVE_TIME_LOUD, MOVE_TIME_QUIET } from '../config';
+import { MOVE_TIME_LOUD, MOVE_TIME_QUIET, NOISE_MOVE_LOUD, NOISE_MOVE_QUIET, NOISE_SPAWN_MINOTAUR } from '../config';
 
 const WIDTH = 200;
 const PADDLE_WIDTH = 10;
 
-export class MoveMinigame {
+export class NoiseMeter {
     scene: Scene;
     bg: GameObjects.Graphics;
     safeZone: GameObjects.Graphics;
@@ -18,6 +18,8 @@ export class MoveMinigame {
         min: 0,
         max: 0
     };
+    noiseLevel = 0;
+    minotaurAlerted: Phaser.Events.EventEmitter;
 
     constructor(scene: Scene) {
         this.scene = scene;
@@ -38,6 +40,8 @@ export class MoveMinigame {
 
         this.bg.setScrollFactor(0);
         this.paddle.setScrollFactor(0);
+
+        this.minotaurAlerted =  new Phaser.Events.EventEmitter();
 
         this.start();
     }
@@ -67,11 +71,21 @@ export class MoveMinigame {
         this.show();
     }
 
-    getNoiseLevel(): number {
+    makeNoise(): boolean {
         const x = this.paddle.x + this.left;
-        const level = x > this.safeArea.min && x < this.safeArea.max - PADDLE_WIDTH;
+        const isQuiet = x > this.safeArea.min && x < this.safeArea.max - PADDLE_WIDTH;
 
-        return level ? MOVE_TIME_QUIET : MOVE_TIME_LOUD
+        if (isQuiet) {
+            this.noiseLevel -= NOISE_MOVE_QUIET;
+        } else {
+            this.noiseLevel += NOISE_MOVE_LOUD;
+        }
+
+        if (this.noiseLevel >= NOISE_SPAWN_MINOTAUR) {
+            this.minotaurAlerted.emit('minotaur-alerted');
+        }
+
+        return isQuiet;
     }
 
     stop(): boolean {

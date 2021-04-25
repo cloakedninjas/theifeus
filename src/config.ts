@@ -8,6 +8,10 @@ export const MOVE_TIME_LOUD = 300;
 export const MEMORY_FADE = 6;
 export const MEMORY_FORGOT = 6;
 
+export const NOISE_SPAWN_MINOTAUR = 6;
+export const NOISE_MOVE_QUIET = 0.3;
+export const NOISE_MOVE_LOUD = 1;
+
 export const PROB_FIND_TREASURE = 0.33;
 export const TREASURES = [{
     name: ''

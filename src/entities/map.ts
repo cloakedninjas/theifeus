@@ -69,6 +69,10 @@ export class Map {
         }
     }
 
+    isExit(pos: Phaser.Types.Math.Vector2Like): boolean {
+        return this.tilemap.getTileAt(pos.x, pos.y, true, 'rooms-1').index === CELL_EXIT;
+    }
+
     isExiting(playerPos: Phaser.Types.Math.Vector2Like, destinationPosition: Phaser.Types.Math.Vector2Like): boolean {
         let onExitTile = false;
 

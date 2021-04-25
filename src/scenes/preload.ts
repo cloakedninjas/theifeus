@@ -47,7 +47,6 @@ export default class Preload extends Scene {
 
     this.load.image('labyrinth-tiles', 'assets/map/labyrinth-tiles-32.png');
     this.load.tilemapTiledJSON('labyrinth-tiles', 'assets/map/labyrinth-map.json');
-
   }
 
   create(): void {

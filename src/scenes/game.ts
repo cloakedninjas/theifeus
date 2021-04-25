@@ -1,10 +1,13 @@
 import { Scene } from 'phaser';
-import { CELL_PER_TILE, MEMORY_FORGOT, MOVE_TIME_LOUD, MOVE_TIME_QUIET } from '../config';
+import { CELL_PER_TILE, CELL_WALKABLE, MEMORY_FORGOT, MOVE_TIME_LOUD, MOVE_TIME_QUIET } from '../config';
 import { Map } from '../entities/map';
 import { Minotaur } from '../entities/minotaur';
 import { Player } from '../entities/player';
 import { NoiseMeter } from '../entities/noise-meter';
 import { HideTimer } from '../entities/hide-timer';
+
+const ARROW_FRAME_ACTIVE = 0;
+const ARROW_FRAME_DISABLED = 2;
 
 export class Game extends Scene {
   private map: Map;
@@ -20,6 +23,7 @@ export class Game extends Scene {
   canMove = true;
   hideUI: HideTimer;
   ui: Phaser.GameObjects.Image;
+  arrows: { n: Phaser.GameObjects.Sprite; e: Phaser.GameObjects.Sprite; s: Phaser.GameObjects.Sprite; w: Phaser.GameObjects.Sprite; };
 
   constructor() {
     super({
@@ -38,11 +42,6 @@ export class Game extends Scene {
     const player = new Player(this, this.map);
     this.player = this.add.existing(player);
 
-    const startPoint: Phaser.Tilemaps.Tile = Phaser.Utils.Array.GetRandom(this.map.exits);
-
-    this.player.setTilePosition(startPoint.x, startPoint.y);
-    this.playerMoved(this.player.tilePosition);
-
     this.noiseMeter = new NoiseMeter(this);
     this.noiseMeter.noiseThreshold.on('noise-high', this.summonMinotaur, this);
     this.noiseMeter.noiseThreshold.on('noise-low', this.stopMinotaur, this);
@@ -51,7 +50,33 @@ export class Game extends Scene {
     this.ui.setScrollFactor(0);
     this.ui.setOrigin(0, 1);
 
+    this.arrows = {
+      n: this.add.sprite(259, 613, 'arrow', 2),
+      e: this.add.sprite(306, 657, 'arrow', 2),
+      s: this.add.sprite(259, 706, 'arrow', 2),
+      w: this.add.sprite(209, 657, 'arrow', 2)
+    }
+
+    this.arrows.e.angle = 90;
+    this.arrows.s.angle = 180;
+    this.arrows.w.angle = 270;
+
+    for (const key in this.arrows) {
+      if (Object.prototype.hasOwnProperty.call(this.arrows, key)) {
+        const arrow: Phaser.GameObjects.Sprite = this.arrows[key];
+        arrow.setScrollFactor(0);
+        arrow.setInteractive({
+          useHandCursor: true
+        });
+      }
+    }
+
     this.noiseMeter.bringToTop();
+
+    const startPoint: Phaser.Tilemaps.Tile = Phaser.Utils.Array.GetRandom(this.map.exits);
+
+    this.player.setTilePosition(startPoint.x, startPoint.y);
+    this.playerMoved(this.player.tilePosition);
 
     this.setupCameraControls();
     this.setupKeyboardControls();
@@ -152,6 +177,36 @@ export class Game extends Scene {
           this.minotaurWalkAway();
         }
       }
+    }
+
+    // update button states;
+    const tileNorth = this.map.getTileAt({ x: pos.x, y: pos.y - 1 });
+    const tileSouth = this.map.getTileAt({ x: pos.x, y: pos.y + 1 });
+    const tileEast = this.map.getTileAt({ x: pos.x + 1, y: pos.y });
+    const tileWest = this.map.getTileAt({ x: pos.x - 1, y: pos.y });
+
+    if (tileNorth.index === CELL_WALKABLE || this.map.isExit({ x: tileNorth.x, y: tileNorth.y })) {
+      this.arrows.n.setFrame(ARROW_FRAME_ACTIVE);
+    } else {
+      this.arrows.n.setFrame(ARROW_FRAME_DISABLED);
+    }
+
+    if (tileSouth.index === CELL_WALKABLE || this.map.isExit({ x: tileSouth.x, y: tileSouth.y })) {
+      this.arrows.s.setFrame(ARROW_FRAME_ACTIVE);
+    } else {
+      this.arrows.s.setFrame(ARROW_FRAME_DISABLED);
+    }
+
+    if (tileEast.index === CELL_WALKABLE || this.map.isExit({ x: tileEast.x, y: tileEast.y })) {
+      this.arrows.e.setFrame(ARROW_FRAME_ACTIVE);
+    } else {
+      this.arrows.e.setFrame(ARROW_FRAME_DISABLED);
+    }
+
+    if (tileWest.index === CELL_WALKABLE || this.map.isExit({ x: tileWest.x, y: tileWest.y })) {
+      this.arrows.w.setFrame(ARROW_FRAME_ACTIVE);
+    } else {
+      this.arrows.w.setFrame(ARROW_FRAME_DISABLED);
     }
   }
 

@@ -22,7 +22,7 @@ export class Game extends Scene {
 
     const player = new Player(this);
     this.player = this.add.existing(player);
-    this.player.setTilePosition(17, 19);
+    this.player.setTilePosition(52, 58);
     this.map.playerEnterredTile(this.player.tilePosition);
 
     this.setupCameraControls();
@@ -60,7 +60,11 @@ export class Game extends Scene {
     };
 
     if (this.map.isMoveValid(this.player.tilePosition, destinationPosition)) {
-      this.requestedMoveLocation = destinationPosition;
+
+      this.requestedMoveLocation = {
+        x: this.player.tilePosition.x + (vectorX * 3),
+        y: this.player.tilePosition.y + (vectorY * 3)
+      };
       this.moveMinigame.start();
     } else {
       console.log('not valid move');

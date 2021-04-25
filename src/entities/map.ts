@@ -41,26 +41,8 @@ export class Map {
     }
 
     isMoveValid(a: Phaser.Types.Math.Vector2Like, b: Phaser.Types.Math.Vector2Like): boolean {
-        const north = b.y === a.y - 1;
-        const east = b.x === a.x + 1;
-        const south = b.y === a.y + 1;
-        const west = b.x === a.x - 1;
-
-        let cell1;
-        let cell2;
-
-        if (north) {
-            cell1 = this.tilemap.getTileAt((a.x * CELL_PER_TILE) + 1, (a.y * CELL_PER_TILE));
-            cell2 = this.tilemap.getTileAt((b.x * CELL_PER_TILE) + 1, (b.y * CELL_PER_TILE) + 2);
-
-            /* cell1.tint = 0xff0000;
-            cell2.tint = 0xff0000; */
-
-            return cell1.index === cell2.index && cell1.index === 7;
-        }
-
-        //const tile = this.tilemap.getTileAt(b.x, b.y);
-        //return tile.properties.walkable;
+        const tile = this.tilemap.getTileAt(b.x, b.y);
+        return tile.index === 7;
 
         return false;
     }
@@ -74,31 +56,17 @@ export class Map {
         return this.tilemap.getTileAt(position.x, position.y);
     }
 
-    getCentreCellAtTile(position: Phaser.Types.Math.Vector2Like): Phaser.Tilemaps.Tile {
-        const centreCell = {
-            x: (position.x * CELL_PER_TILE) + 1,
-            y: (position.y * CELL_PER_TILE) + 1
-        };
-
-        return this.tilemap.getTileAt(centreCell.x, centreCell.y);
-    }
-
     getCellsAtTile(position: Phaser.Types.Math.Vector2Like): Phaser.Tilemaps.Tile[] {
-        const centreCell = {
-            x: (position.x * CELL_PER_TILE) + 1,
-            y: (position.y * CELL_PER_TILE) + 1
-        };
-
         return [
-            this.tilemap.getTileAt(centreCell.x - 1, centreCell.y - 1),
-            this.tilemap.getTileAt(centreCell.x, centreCell.y - 1),
-            this.tilemap.getTileAt(centreCell.x + 1, centreCell.y - 1),
-            this.tilemap.getTileAt(centreCell.x - 1, centreCell.y),
-            this.tilemap.getTileAt(centreCell.x, centreCell.y),
-            this.tilemap.getTileAt(centreCell.x + 1, centreCell.y),
-            this.tilemap.getTileAt(centreCell.x - 1, centreCell.y + 1),
-            this.tilemap.getTileAt(centreCell.x, centreCell.y + 1),
-            this.tilemap.getTileAt(centreCell.x + 1, centreCell.y + 1)
+            this.tilemap.getTileAt(position.x - 1, position.y - 1),
+            this.tilemap.getTileAt(position.x, position.y - 1),
+            this.tilemap.getTileAt(position.x + 1, position.y - 1),
+            this.tilemap.getTileAt(position.x - 1, position.y),
+            this.tilemap.getTileAt(position.x, position.y),
+            this.tilemap.getTileAt(position.x + 1, position.y),
+            this.tilemap.getTileAt(position.x - 1, position.y + 1),
+            this.tilemap.getTileAt(position.x, position.y + 1),
+            this.tilemap.getTileAt(position.x + 1, position.y + 1)
         ];
     }
 }

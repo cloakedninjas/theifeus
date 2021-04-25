@@ -1,5 +1,6 @@
 import { GameObjects, Scene, Tweens } from 'phaser';
 import { HIDE_FAIL_TIME, HIDE_INITIAL_TIMEOUT, HIDE_SUCCESS_TIME } from '../config';
+import { NoiseMeter } from './noise-meter';
 
 const WIDTH = 315;
 const BAR_HEIGHT = 15;
@@ -20,9 +21,11 @@ export class HuntedUI {
     aura: GameObjects.Image;
     auraTween: Tweens.Tween;
     button: GameObjects.Image;
+    noiseMeter: NoiseMeter;
 
-    constructor(scene: Scene) {
+    constructor(scene: Scene, noiseMeter: NoiseMeter) {
         this.scene = scene;
+        this.noiseMeter = noiseMeter;
 
         this.x = scene.cameras.main.width / 2;
         this.y = 570;
@@ -65,7 +68,13 @@ export class HuntedUI {
         });
 
         this.button.on('pointerup', () => {
-            this.addTime();
+            const isQuiet = this.noiseMeter.getNoiseReading();
+
+            if (isQuiet) {
+                this.addTime();
+            } else {
+                this.removeTime();
+            }
         });
 
         this.result = new Phaser.Events.EventEmitter();

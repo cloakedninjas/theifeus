@@ -128,6 +128,7 @@ export class Game extends Scene {
     cursors.right.on('up', () => this.tryMovingPlayer(1, 0));
     cursors.space.on('up', () => this.performAction());
 
+    // debug
     this.input.on('pointerup', () => {
       //this.searchRoom();
       //this.showHuntedUI();
@@ -323,7 +324,7 @@ export class Game extends Scene {
 
   private showHuntedUI(): void {
     this.canMove = false;
-    this.huntedUI = new HuntedUI(this);
+    this.huntedUI = new HuntedUI(this, this.noiseMeter);
 
     this.huntedUI.result.on('success', () => {
       this.huntedUI.destroy();

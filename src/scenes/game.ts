@@ -125,7 +125,7 @@ export class Game extends Scene {
 
     this.input.on('pointerup', () => {
       //this.searchRoom();
-      this.showHuntedUI();
+      //this.showHuntedUI();
     });
   }
 

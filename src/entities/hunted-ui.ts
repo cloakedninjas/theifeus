@@ -64,6 +64,10 @@ export class HuntedUI {
             this.button.setFrame(0);
         });
 
+        this.button.on('pointerup', () => {
+            this.addTime();
+        });
+
         this.result = new Phaser.Events.EventEmitter();
 
         this.scene.tweens.add({
@@ -138,14 +142,17 @@ export class HuntedUI {
                 this.timeLeft = (HIDE_INITIAL_TIMEOUT * target.value);
             },
             onComplete: () => {
-                //this.result.emit('fail');
+                this.result.emit('fail');
             },
             duration: this.timeLeft
         });
     }
 
     destroy(): void {
+        this.bg.destroy();
         this.meter.destroy();
         this.marker.destroy();
+        this.button.destroy();
+        this.aura.destroy();
     }
 }

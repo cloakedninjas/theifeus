@@ -28,20 +28,32 @@ export class Minotaur extends Creature {
         const nextPosition = this.path.shift();
 
         if (this.tilePosition.x === playerPos.x && this.tilePosition.y === playerPos.y) {
-            console.log('Chomp');
+            console.log('Chomp 1');
             this.attacking.emit('attacking');
+            return;
         }
-        else {
-            if (this.map.objectsAreAdjacent(playerPos, nextPosition)) {
-                console.log('ADJ');
-                this.path = [playerPos];
-            } else {
-                console.log('adding to path');
-                this.path.push(playerPos);
-            }
 
+        if (nextPosition.x === playerPos.x && nextPosition.y === playerPos.y) {
+            // minotaur moves onto player current space
+            console.log('Chomp 2');
             this.moveTo(nextPosition, MINOTAUR_MOVE_TIME);
+            this.attacking.emit('attacking');
+            return;
         }
+
+        if (this.tilePosition.x === playerPos.x && this.tilePosition.y === playerPos.y) {
+            console.log('ADJ 2');
+            this.path = [playerPos];
+        } else if (this.map.objectsAreAdjacent(playerPos, nextPosition)) {
+            console.log('ADJ 3');
+            this.path = [playerPos];
+        } else {
+            console.log('adding to path');
+            this.path.push(playerPos);
+        }
+
+        this.moveTo(nextPosition, MINOTAUR_MOVE_TIME);
+
     }
 
     stopFollow(): void {

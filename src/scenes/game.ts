@@ -154,13 +154,11 @@ export class Game extends Scene {
   } */
 
   private summonMinotaur(): void {
-    console.log('summon');
     if (!this.minotaur) {
       // try to spawn minotaur someplace in history, not currently in memory
       const historyStartIndex = this.playerTileHistory.length - this.playerMemory.length - 1;
 
       if (historyStartIndex < 0) {
-        console.log('cannot summon, too close, not enough history');
         return;
       }
 
@@ -192,10 +190,13 @@ export class Game extends Scene {
   }
 
   private stopMinotaur(): void {
-    this.minotaur.stopFollow();
+    if (this.minotaur) {
+      this.minotaur.stopFollow();
+    }
   }
 
   private showCombatUI(): void {
+    return;
     this.canMove = false;
     this.hideUI = new HideTimer(this);
 

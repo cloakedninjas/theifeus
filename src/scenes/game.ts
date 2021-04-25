@@ -77,7 +77,11 @@ export class Game extends Scene {
       y: this.player.tilePosition.y + vectorY
     };
 
-    if (this.map.isMoveValid(this.player.tilePosition, destinationPosition)) {
+    if (this.map.isExiting(this.player.tilePosition, destinationPosition)) {
+      console.log('is exit');
+    }
+
+    if (this.map.isWalkableTile(destinationPosition)) {
       this.requestedMoveLocation = {
         x: this.player.tilePosition.x + (vectorX * CELL_PER_TILE),
         y: this.player.tilePosition.y + (vectorY * CELL_PER_TILE)
@@ -179,7 +183,6 @@ export class Game extends Scene {
         }
 
         if (!tileVisisble) {
-          console.error('I HEAR YOU!');
           const minotaur = new Minotaur(this, this.map);
           this.minotaur = this.add.existing(minotaur);
 

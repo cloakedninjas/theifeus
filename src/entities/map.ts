@@ -50,9 +50,37 @@ export class Map {
         };
     } */
 
-    isMoveValid(a: Phaser.Types.Math.Vector2Like, b: Phaser.Types.Math.Vector2Like): boolean {
-        const tile = this.tilemap.getTileAt(b.x, b.y);
+    isWalkableTile(pos: Phaser.Types.Math.Vector2Like): boolean {
+        if (this.isEdgeTile(pos)) {
+            return false;
+        }
+
+        const tile = this.tilemap.getTileAt(pos.x, pos.y);
         return tile.index === CELL_WALKABLE;
+    }
+
+    isEdgeTile(pos: Phaser.Types.Math.Vector2Like): boolean {
+        if (pos.x === 0 || pos.x === this.tilemap.width - 1) {
+            return true;
+        }
+
+        if (pos.y === 0 || pos.y === this.tilemap.height - 1) {
+            return true;
+        }
+    }
+
+    isExiting(playerPos: Phaser.Types.Math.Vector2Like, destinationPosition: Phaser.Types.Math.Vector2Like): boolean {
+        let onExitTile = false;
+
+        for (let i = 0; i < this.exits.length; i++) {
+            const exit = this.exits[i];
+            if (exit.x === playerPos.x && exit.y === playerPos.y) {
+                onExitTile = true;
+                break;
+            }
+        }
+
+        return onExitTile && this.isEdgeTile(destinationPosition);
     }
 
     playerEnterredTile(position: Phaser.Types.Math.Vector2Like): void {

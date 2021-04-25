@@ -206,6 +206,8 @@ export class Game extends Scene {
       this.hideUI.destroy();
       this.hideUI = null;
       this.noiseMeter.reset();
+      this.canMove = true;
+      this.minotaurWalkAway();
     });
 
     this.hideUI.result.on('fail', () => {

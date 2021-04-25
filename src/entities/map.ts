@@ -29,14 +29,14 @@ export class Map {
         });
     }
 
-    getValidMovePositions(pos: Phaser.Types.Math.Vector2Like): ValidMovePositions {
+    /* getValidMovePositions(pos: Phaser.Types.Math.Vector2Like): ValidMovePositions {
         return {
             n: this.tilemap.getTileAt(pos.x, pos.y - 1)?.properties.walkable,
             e: this.tilemap.getTileAt(pos.x + 1, pos.y)?.properties.walkable,
             s: this.tilemap.getTileAt(pos.x, pos.y + 1)?.properties.walkable,
             w: this.tilemap.getTileAt(pos.x - 1, pos.y)?.properties.walkable
         };
-    }
+    } */
 
     isMoveValid(a: Phaser.Types.Math.Vector2Like, b: Phaser.Types.Math.Vector2Like): boolean {
         const tile = this.tilemap.getTileAt(b.x, b.y);
@@ -76,12 +76,22 @@ export class Map {
     }
 
     objectsAreAdjacent(a: Phaser.Types.Math.Vector2Like, b: Phaser.Types.Math.Vector2Like): boolean {
-        if (a.x === b.x && Math.abs(a.y - b.y) === CELL_PER_TILE) {
-            return true;
+        const distY = a.y - b.y;
+
+        if (a.x === b.x && Math.abs(distY) === CELL_PER_TILE) {
+            if (distY > 0) {
+                return this.tilemap.getTileAt(a.x, a.y - 1).index === CELL_WALKABLE;
+            }
+            return this.tilemap.getTileAt(a.x, a.y + 1).index === CELL_WALKABLE;
         }
 
-        if (a.y === b.y && Math.abs(a.x - b.x) === CELL_PER_TILE) {
-            return true;
+        const distX = a.x - b.x;
+
+        if (a.y === b.y && Math.abs(distX) === CELL_PER_TILE) {
+            if (distX > 0) {
+                return this.tilemap.getTileAt(a.x - 1, a.y).index === CELL_WALKABLE;
+            }
+            return this.tilemap.getTileAt(a.x + 1, a.y).index === CELL_WALKABLE;
         }
 
         return false;

@@ -196,7 +196,6 @@ export class Game extends Scene {
   }
 
   private showCombatUI(): void {
-    return;
     this.canMove = false;
     this.hideUI = new HideTimer(this);
 

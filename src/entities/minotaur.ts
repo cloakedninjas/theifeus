@@ -46,7 +46,6 @@ export class Minotaur extends Creature {
             console.log('ADJ 3');
             this.path = [playerPos];
         } else {
-            console.log('adding to path');
             this.path.push(playerPos);
         }
 

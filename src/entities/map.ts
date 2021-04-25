@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { CELL_PER_TILE } from '../config';
+import { CELL_PER_TILE, CELL_WALKABLE } from '../config';
 import { Tile } from './tile';
 
 export class Map {
@@ -19,8 +19,8 @@ export class Map {
             key: 'labyrinth-tiles'
         });
 
-        const tileset = this.tilemap.addTilesetImage('labyrinth-tiles', 'labyrinth-tiles');
-        const tileLayer = this.tilemap.createLayer('Map-2', tileset);
+        const tileset = this.tilemap.addTilesetImage('labyrinth-tiles-32', 'labyrinth-tiles');
+        const tileLayer = this.tilemap.createLayer('map-1', tileset);
 
         tileLayer.layer.data.forEach(row => {
             row.forEach(tile => {
@@ -40,7 +40,7 @@ export class Map {
 
     isMoveValid(a: Phaser.Types.Math.Vector2Like, b: Phaser.Types.Math.Vector2Like): boolean {
         const tile = this.tilemap.getTileAt(b.x, b.y);
-        return tile.index === 7;
+        return tile.index === CELL_WALKABLE;
     }
 
     playerEnterredTile(position: Phaser.Types.Math.Vector2Like): void {

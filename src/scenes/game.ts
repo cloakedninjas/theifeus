@@ -30,7 +30,7 @@ export class Game extends Scene {
 
     const player = new Player(this, this.map);
     this.player = this.add.existing(player);
-    this.player.setTilePosition(52, 58);
+    this.player.setTilePosition(1, 1);
     this.playerMoved(this.player.tilePosition);
 
     this.setupCameraControls();

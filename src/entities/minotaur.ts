@@ -1,7 +1,7 @@
 import { Scene } from 'phaser';
 import { Creature } from './creature'
 
-export class Player extends Creature {
+export class Minotaur extends Creature {
 
     tilePosition: Phaser.Types.Math.Vector2Like = {
         x: 0,
@@ -9,6 +9,6 @@ export class Player extends Creature {
     };
 
     constructor(scene: Scene) {
-        super(scene, 'player');
+        super(scene, 'minotaur');
     }
 }

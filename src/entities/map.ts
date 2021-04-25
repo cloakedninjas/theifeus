@@ -1,5 +1,4 @@
 import { Scene } from 'phaser';
-import { CELL_PER_TILE, TILE_SIZE } from '../config';
 import { Tile } from './tile';
 
 export class Map {

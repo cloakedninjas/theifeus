@@ -1,12 +1,14 @@
 import { Scene } from 'phaser';
-import { MOVE_TIME_LOUD, MOVE_TIME_QUIET, PROB_FIND_TREASURE } from '../config';
+import { CELL_PER_TILE, MOVE_TIME_LOUD, MOVE_TIME_QUIET, PROB_FIND_TREASURE } from '../config';
 import { Map } from '../entities/map';
+import { Minotaur } from '../entities/minotaur';
 import { Player } from '../entities/player';
 import { MoveMinigame } from '../entities/move-minigame';
 
 export class Game extends Scene {
   private map: Map;
   private player: Player;
+  private minotaur: Minotaur;
   private moveMinigame: MoveMinigame;
   private requestedMoveLocation: Phaser.Types.Math.Vector2Like;
   private treasureCollected = 0;
@@ -25,6 +27,10 @@ export class Game extends Scene {
     this.player = this.add.existing(player);
     this.player.setTilePosition(52, 58);
     this.map.playerEnterredTile(this.player.tilePosition);
+
+    const minotaur = new Minotaur(this);
+    this.minotaur = this.add.existing(minotaur);
+    this.minotaur.setTilePosition(52, 55);
 
     this.setupCameraControls();
     this.setupKeyboardControls();
@@ -66,8 +72,8 @@ export class Game extends Scene {
 
     if (this.map.isMoveValid(this.player.tilePosition, destinationPosition)) {
       this.requestedMoveLocation = {
-        x: this.player.tilePosition.x + (vectorX * 3),
-        y: this.player.tilePosition.y + (vectorY * 3)
+        x: this.player.tilePosition.x + (vectorX * CELL_PER_TILE),
+        y: this.player.tilePosition.y + (vectorY * CELL_PER_TILE)
       };
 
       const noiseLevel = this.moveMinigame.getNoiseLevel();

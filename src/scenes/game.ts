@@ -19,6 +19,7 @@ export class Game extends Scene {
   playerMoveTween: Phaser.Tweens.Tween;
   canMove = true;
   hideUI: HideTimer;
+  ui: Phaser.GameObjects.Image;
 
   constructor() {
     super({
@@ -42,25 +43,25 @@ export class Game extends Scene {
     this.player.setTilePosition(startPoint.x, startPoint.y);
     this.playerMoved(this.player.tilePosition);
 
-    this.setupCameraControls();
-    this.setupKeyboardControls();
-
     this.noiseMeter = new NoiseMeter(this);
     this.noiseMeter.noiseThreshold.on('noise-high', this.summonMinotaur, this);
     this.noiseMeter.noiseThreshold.on('noise-low', this.stopMinotaur, this);
 
-    const ui = this.add.image(0, this.cameras.main.height, 'main_ui');
-    ui.setScrollFactor(0);
-    ui.setOrigin(0, 1);
+    this.ui = this.add.image(0, this.cameras.main.height, 'main_ui');
+    this.ui.setScrollFactor(0);
+    this.ui.setOrigin(0, 1);
 
     this.noiseMeter.bringToTop();
+
+    this.setupCameraControls();
+    this.setupKeyboardControls();
 
     // debug
     window['scene'] = this;
   }
 
   private setupCameraControls(): void {
-    this.cameras.main.setBounds(0, 0, this.map.tilemap.widthInPixels, this.map.tilemap.heightInPixels);
+    this.cameras.main.setBounds(0, 0, this.map.tilemap.widthInPixels, this.map.tilemap.heightInPixels + this.ui.height);
     this.cameras.main.startFollow(this.player);
   }
 

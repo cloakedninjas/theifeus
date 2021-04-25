@@ -29,6 +29,7 @@ export class Game extends Scene {
   arrows: { n: Phaser.GameObjects.Sprite; e: Phaser.GameObjects.Sprite; s: Phaser.GameObjects.Sprite; w: Phaser.GameObjects.Sprite; };
   searchButton: Phaser.GameObjects.Image;
   searchButtonTween: Phaser.Tweens.Tween;
+  bg: Phaser.GameObjects.TileSprite;
 
   constructor() {
     super({
@@ -37,6 +38,10 @@ export class Game extends Scene {
   }
 
   create(): void {
+    this.bg = this.add.tileSprite(0, 0, 1000, this.game.scale.height, 'background_pattern');
+    this.bg.setScrollFactor(0);
+    this.bg.setOrigin(0, 0);
+
     this.map = new Map(this);
 
     this.treasures = this.cache.json.get('treasures');

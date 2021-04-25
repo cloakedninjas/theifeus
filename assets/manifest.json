@@ -1,15 +1,11 @@
 {
     "assetRoot": "assets",
-    "totalSize": 550875,
+    "totalSize": 553255,
     "assets": {
         "image": {
             "player": {
                 "file": "player.png",
                 "size": 2430
-            },
-            "minotaur": {
-                "file": "minotaur.png",
-                "size": 262
             },
             "loud": {
                 "file": "loud.png",
@@ -46,6 +42,10 @@
             "red_mist": {
                 "file": "red_mist.png",
                 "size": 1593
+            },
+            "background_pattern": {
+                "file": "background_pattern.png",
+                "size": 2380
             }
         },
         "json": {

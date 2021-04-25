@@ -13,7 +13,7 @@ export class Minotaur extends Creature {
     attacking: Phaser.Events.EventEmitter;
 
     constructor(scene: Scene, map: Map) {
-        super(scene, 'minotaur', map);
+        super(scene, 'monster', map);
         this.attacking = new Phaser.Events.EventEmitter();
     }
 

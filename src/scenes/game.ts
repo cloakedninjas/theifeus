@@ -49,6 +49,12 @@ export class Game extends Scene {
     this.noiseMeter.noiseThreshold.on('noise-high', this.summonMinotaur, this);
     this.noiseMeter.noiseThreshold.on('noise-low', this.stopMinotaur, this);
 
+    const ui = this.add.image(0, this.cameras.main.height, 'main_ui');
+    ui.setScrollFactor(0);
+    ui.setOrigin(0, 1);
+
+    this.children.bringToTop(this.noiseMeter.paddle);
+
     // debug
     window['scene'] = this;
   }

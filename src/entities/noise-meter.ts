@@ -1,14 +1,15 @@
 import { GameObjects, Math, Scene, Tweens } from 'phaser';
-import { NOISE_MOVE_LOUD, NOISE_MOVE_QUIET, NOISE_SPAWN_MINOTAUR } from '../config';
+import { NOISE_MARKER_SPEED, NOISE_MOVE_LOUD, NOISE_MOVE_QUIET, NOISE_SPAWN_MINOTAUR } from '../config';
 
-const WIDTH = 200;
+const WIDTH = 300;
+const HEIGHT = 35;
 const PADDLE_WIDTH = 10;
 
 export class NoiseMeter {
     scene: Scene;
     bg: GameObjects.Graphics;
     safeZone: GameObjects.Graphics;
-    paddle: GameObjects.Graphics;
+    paddle: GameObjects.Image;
     tween: Tweens.Tween;
     x: number;
     y: number;
@@ -27,18 +28,16 @@ export class NoiseMeter {
         this.scene = scene;
 
         this.x = scene.cameras.main.width / 2;
-        this.y = scene.cameras.main.height - 100;
+        this.y = 629;
         this.left = this.x - WIDTH / 2;
         this.right = this.x + WIDTH / 2;
 
         this.bg = new GameObjects.Graphics(scene);
         scene.add.existing(this.bg);
 
-        this.paddle = new GameObjects.Graphics(scene);
+        this.paddle = new GameObjects.Image(scene, this.left, this.y, 'marker');
+        this.paddle.setOrigin(0.5, 0);
         scene.add.existing(this.paddle);
-
-        this.paddle.fillStyle(0x223300);
-        this.paddle.fillRect(this.left, this.y, PADDLE_WIDTH, 50);
 
         this.bg.setScrollFactor(0);
         this.paddle.setScrollFactor(0);
@@ -51,7 +50,7 @@ export class NoiseMeter {
     start(): void {
         //bg
         this.bg.fillStyle(0xcc0000);
-        this.bg.fillRect(this.left, this.y, WIDTH, 50);
+        this.bg.fillRect(this.left, this.y, WIDTH, HEIGHT);
 
         // safe zone
         const safeWidth = 50;
@@ -59,15 +58,15 @@ export class NoiseMeter {
         this.safeArea.max = this.safeArea.min + safeWidth;
 
         this.bg.fillStyle(0x00cc00);
-        this.bg.fillRect(this.safeArea.min, this.y, safeWidth, 50);
+        this.bg.fillRect(this.safeArea.min, this.y, safeWidth, HEIGHT);
 
         this.tween = this.scene.tweens.add({
             targets: this.paddle,
-            x: WIDTH - PADDLE_WIDTH,
+            x: this.right,
             ease: Math.Easing.Linear,
             yoyo: true,
             repeat: -1,
-            duration: 1000
+            duration: NOISE_MARKER_SPEED
         });
 
         this.show();

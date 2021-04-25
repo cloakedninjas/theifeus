@@ -23,11 +23,9 @@ export class Map {
 
         tileLayer.layer.data.forEach(row => {
             row.forEach(tile => {
-                tile.tint = 0x333333;
+                tile.alpha = 0;
             });
         });
-
-        //
     }
 
     getValidMovePositions(pos: Phaser.Types.Math.Vector2Like): ValidMovePositions {
@@ -42,13 +40,21 @@ export class Map {
     isMoveValid(a: Phaser.Types.Math.Vector2Like, b: Phaser.Types.Math.Vector2Like): boolean {
         const tile = this.tilemap.getTileAt(b.x, b.y);
         return tile.index === 7;
-
-        return false;
     }
 
     playerEnterredTile(position: Phaser.Types.Math.Vector2Like): void {
         const tiles = this.getCellsAtTile(position);
+        //tiles.forEach(tile => tile.tint = 0xffffff);
+        tiles.forEach(tile => tile.alpha = 1);
         tiles.forEach(tile => tile.tint = 0xffffff);
+    }
+
+    fadeFromMemory(pos: Phaser.Types.Math.Vector2Like, forgot: boolean): void {
+        if (forgot) {
+            this.getCellsAtTile(pos).forEach(tile => tile.alpha = 0);
+        } else {
+            this.getCellsAtTile(pos).forEach(tile => tile.tint = 0x333333);
+        }
     }
 
     getTileAt(position: Phaser.Types.Math.Vector2Like): Phaser.Tilemaps.Tile {

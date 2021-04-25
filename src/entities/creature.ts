@@ -20,7 +20,7 @@ export class Creature extends GameObjects.Sprite {
             x: screenPos.x,
             y: screenPos.y,
             ease: Phaser.Math.Easing.Sine.InOut,
-            duraton: speed,
+            duration: speed,
             onComplete: () => {
                 this.setTilePosition(newPosition.x, newPosition.y);
             }

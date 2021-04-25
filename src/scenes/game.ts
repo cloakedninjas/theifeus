@@ -53,7 +53,7 @@ export class Game extends Scene {
     ui.setScrollFactor(0);
     ui.setOrigin(0, 1);
 
-    this.children.bringToTop(this.noiseMeter.paddle);
+    this.noiseMeter.bringToTop();
 
     // debug
     window['scene'] = this;

@@ -10,6 +10,8 @@ export class NoiseMeter {
     bg: GameObjects.Graphics;
     safeZone: GameObjects.Graphics;
     paddle: GameObjects.Image;
+    badgeLoud: GameObjects.Image;
+    badgeQuiet: GameObjects.Image;
     tween: Tweens.Tween;
     x: number;
     y: number;
@@ -35,16 +37,26 @@ export class NoiseMeter {
         this.bg = new GameObjects.Graphics(scene);
         scene.add.existing(this.bg);
 
-        this.paddle = new GameObjects.Image(scene, this.left, this.y, 'marker');
+        this.paddle = scene.add.image(this.left, this.y, 'marker');
         this.paddle.setOrigin(0.5, 0);
-        scene.add.existing(this.paddle);
 
         this.bg.setScrollFactor(0);
         this.paddle.setScrollFactor(0);
 
+        this.badgeLoud = scene.add.image(568, 721, 'loud');
+        this.badgeLoud.setScrollFactor(0);
+        this.badgeQuiet = scene.add.image(456, 721, 'silent');
+        this.badgeQuiet.setScrollFactor(0);
+
         this.noiseThreshold = new Phaser.Events.EventEmitter();
 
         this.start();
+    }
+
+    bringToTop(): void {
+        this.scene.children.bringToTop(this.paddle);
+        this.scene.children.bringToTop(this.badgeQuiet);
+        this.scene.children.bringToTop(this.badgeLoud);
     }
 
     start(): void {

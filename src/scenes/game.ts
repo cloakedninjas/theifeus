@@ -10,6 +10,7 @@ export class Game extends Scene {
   private moveMinigame: MoveMinigame;
   private requestedMoveLocation: Phaser.Types.Math.Vector2Like;
   private treasureCollected = 0;
+  playerMoveTween: Phaser.Tweens.Tween;
 
   constructor() {
     super({
@@ -54,18 +55,25 @@ export class Game extends Scene {
   }
 
   private tryMovingPlayer(vectorX: number, vectorY: number): void {
+    if (this.playerMoveTween?.isPlaying()) {
+      return;
+    }
+
     const destinationPosition: Phaser.Types.Math.Vector2Like = {
       x: this.player.tilePosition.x + vectorX,
       y: this.player.tilePosition.y + vectorY
     };
 
     if (this.map.isMoveValid(this.player.tilePosition, destinationPosition)) {
-
       this.requestedMoveLocation = {
         x: this.player.tilePosition.x + (vectorX * 3),
         y: this.player.tilePosition.y + (vectorY * 3)
       };
-      this.moveMinigame.start();
+
+      const noiseLevel = this.moveMinigame.getNoiseLevel();
+
+      this.playerMoveTween = this.player.moveTo(this.requestedMoveLocation, noiseLevel)
+        .on('complete', () => this.map.playerEnterredTile(this.requestedMoveLocation));
     } else {
       console.log('not valid move');
     }

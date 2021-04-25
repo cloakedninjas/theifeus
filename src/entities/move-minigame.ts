@@ -1,4 +1,5 @@
 import { GameObjects, Math, Scene, Tweens } from 'phaser';
+import { MOVE_TIME_LOUD, MOVE_TIME_QUIET } from '../config';
 
 const WIDTH = 200;
 const PADDLE_WIDTH = 10;
@@ -35,7 +36,10 @@ export class MoveMinigame {
         this.paddle.fillStyle(0x223300);
         this.paddle.fillRect(this.left, this.y, PADDLE_WIDTH, 50);
 
-        this.hide();
+        this.bg.setScrollFactor(0);
+        this.paddle.setScrollFactor(0);
+
+        this.start();
     }
 
     start(): void {
@@ -61,6 +65,13 @@ export class MoveMinigame {
         });
 
         this.show();
+    }
+
+    getNoiseLevel(): number {
+        const x = this.paddle.x + this.left;
+        const level = x > this.safeArea.min && x < this.safeArea.max - PADDLE_WIDTH;
+
+        return level ? MOVE_TIME_QUIET : MOVE_TIME_LOUD
     }
 
     stop(): boolean {

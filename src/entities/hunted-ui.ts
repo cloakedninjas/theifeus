@@ -19,6 +19,7 @@ export class HuntedUI {
     bg: GameObjects.Image;
     aura: GameObjects.Image;
     auraTween: Tweens.Tween;
+    button: GameObjects.Image;
 
     constructor(scene: Scene) {
         this.scene = scene;
@@ -47,6 +48,21 @@ export class HuntedUI {
         scene.add.existing(this.marker);
         this.marker.setScrollFactor(0);
         this.marker.visible = false;
+
+        this.button = scene.add.image(this.x, 710, 'hide');
+        this.button.setScrollFactor(0);
+        this.button.visible = false;
+        this.button.setInteractive({
+            useHandCursor: true
+        });
+
+        this.button.on('pointerover', () => {
+            this.button.setFrame(1);
+        });
+
+        this.button.on('pointerout', () => {
+            this.button.setFrame(0);
+        });
 
         this.result = new Phaser.Events.EventEmitter();
 
@@ -86,6 +102,7 @@ export class HuntedUI {
     startCountdown(): void {
         this.meter.visible = true;
         this.marker.visible = true;
+        this.button.visible = true;
 
         if (!this.auraTween) {
             this.auraTween = this.scene.tweens.add({

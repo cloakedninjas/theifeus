@@ -7,6 +7,7 @@ import { NoiseMeter } from '../entities/noise-meter';
 import { HuntedUI } from '../entities/hunted-ui';
 
 const ARROW_FRAME_ACTIVE = 0;
+const ARROW_FRAME_HOVER = 1;
 const ARROW_FRAME_DISABLED = 2;
 const SEARCH_BUTTON_Y = 664;
 const SEARCH_BUTTON_Y_OFFSCREEN = 900;
@@ -77,6 +78,19 @@ export class Game extends Scene {
         arrow.setScrollFactor(0);
         arrow.setInteractive({
           useHandCursor: true
+        });
+
+        arrow.on('pointerover', () => {
+          if (arrow.frame.name as unknown as number === ARROW_FRAME_ACTIVE) {
+            arrow.setData('prev-frame', arrow.frame.name);
+            arrow.setFrame(ARROW_FRAME_HOVER);
+          }
+        });
+
+        arrow.on('pointerout', () => {
+          if (arrow.frame.name as unknown as number === ARROW_FRAME_HOVER) {
+            arrow.setFrame(arrow.getData('prev-frame'));
+          }
         });
       }
     }

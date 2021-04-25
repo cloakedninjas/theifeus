@@ -1,8 +1,8 @@
 import { GameObjects, Scene, Tweens } from 'phaser';
 import { HIDE_FAIL_TIME, HIDE_INITIAL_TIMEOUT, HIDE_SUCCESS_TIME } from '../config';
 
-const WIDTH = 200;
-const BAR_HEIGHT = 20;
+const WIDTH = 315;
+const BAR_HEIGHT = 15;
 
 export class HuntedUI {
     scene: Scene;
@@ -17,14 +17,21 @@ export class HuntedUI {
     timeLeft = HIDE_INITIAL_TIMEOUT / 2;
     tween: Tweens.Tween;
     bg: GameObjects.Image;
+    aura: GameObjects.Image;
+    auraTween: Tweens.Tween;
 
     constructor(scene: Scene) {
         this.scene = scene;
 
         this.x = scene.cameras.main.width / 2;
-        this.y = scene.cameras.main.height - 150;
+        this.y = 570;
         this.left = this.x - WIDTH / 2;
         this.right = this.x + WIDTH / 2;
+
+        this.aura = scene.add.image(0, this.scene.game.scale.height, 'red_mist');
+        this.aura.setScrollFactor(0);
+        this.aura.setOrigin(0, 1);
+        this.aura.alpha = 0;
 
         this.bg = scene.add.image(0, this.scene.game.scale.height, 'hunted');
         this.bg.setScrollFactor(0);
@@ -32,14 +39,14 @@ export class HuntedUI {
 
         this.meter = new GameObjects.Graphics(scene);
         scene.add.existing(this.meter);
+        this.meter.setScrollFactor(0);
+        this.meter.fillStyle(0xcc0000);
+        this.meter.visible = false;
 
         this.marker = new GameObjects.Sprite(scene, this.x, this.y, 'monster_face');
         scene.add.existing(this.marker);
-
-        this.meter.setScrollFactor(0);
         this.marker.setScrollFactor(0);
-
-        this.meter.fillStyle(0xcc0000);
+        this.marker.visible = false;
 
         this.result = new Phaser.Events.EventEmitter();
 
@@ -47,9 +54,11 @@ export class HuntedUI {
             targets: this.bg,
             y: this.bg.y - this.bg.height,
             ease: Phaser.Math.Easing.Sine.Out,
-            duration: 300
+            duration: 300,
+            onComplete: () => {
+                this.startCountdown();
+            }
         });
-        this.startTween();
     }
 
     addTime(): void {
@@ -59,7 +68,7 @@ export class HuntedUI {
         if (this.timeLeft >= HIDE_INITIAL_TIMEOUT) {
             this.result.emit('success');
         } else {
-            this.startTween();
+            this.startCountdown();
         }
     }
 
@@ -70,11 +79,33 @@ export class HuntedUI {
         if (this.timeLeft < 0) {
             this.result.emit('fail');
         } else {
-            this.startTween();
+            this.startCountdown();
         }
     }
 
-    startTween(): void {
+    startCountdown(): void {
+        this.meter.visible = true;
+        this.marker.visible = true;
+
+        if (!this.auraTween) {
+            this.auraTween = this.scene.tweens.add({
+                targets: this.aura,
+                alpha: 1,
+                ease: Phaser.Math.Easing.Sine.InOut,
+                onComplete: () => {
+                    this.auraTween = this.scene.tweens.add({
+                        targets: this.aura,
+                        alpha: 0.7,
+                        ease: Phaser.Math.Easing.Sine.InOut,
+                        yoyo: true,
+                        repeat: -1,
+                        duration: 1000
+                    });
+                },
+                duration: 1000
+            });
+        }
+
         const from = this.timeLeft / HIDE_INITIAL_TIMEOUT;
 
         this.tween = this.scene.tweens.addCounter({
@@ -84,6 +115,8 @@ export class HuntedUI {
                 const remainingWidth = WIDTH * target.value;
                 this.meter.clear();
                 this.meter.fillRect(this.left, this.y, remainingWidth, BAR_HEIGHT);
+
+                this.marker.x = this.left + remainingWidth;
 
                 this.timeLeft = (HIDE_INITIAL_TIMEOUT * target.value);
             },

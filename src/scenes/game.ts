@@ -114,7 +114,14 @@ export class Game extends Scene {
     }
 
     if (this.minotaur) {
-      this.minotaur.followPath(pos);
+      if (this.minotaur.isFollowing) {
+        this.minotaur.followPath(pos);
+      } else {
+        if (!this.map.objectsAreAdjacent(this.player.tilePosition, this.minotaur.tilePosition)) {
+          this.minotaur.destroy();
+          this.minotaur = null;
+        }
+      }
     }
   }
 
@@ -144,11 +151,13 @@ export class Game extends Scene {
   } */
 
   private summonMinotaur(): void {
+    console.log('summon');
     if (!this.minotaur) {
       // try to spawn minotaur someplace in history, not currently in memory
       const historyStartIndex = this.playerTileHistory.length - this.playerMemory.length - 1;
 
       if (historyStartIndex < 0) {
+        console.log('cannot summon, too close, not enough history');
         return;
       }
 
@@ -169,8 +178,9 @@ export class Game extends Scene {
           console.error('I HEAR YOU!');
           const minotaur = new Minotaur(this, this.map);
           this.minotaur = this.add.existing(minotaur);
+
           this.minotaur.setTilePosition(this.playerTileHistory[i].x, this.playerTileHistory[i].y);
-          this.minotaur.startFollow(this.playerTileHistory.slice(historyStartIndex));
+          this.minotaur.startFollow(this.playerTileHistory.slice(i + 1));
           this.minotaur.attacking.on('attacking', this.showCombatUI, this);
           break;
         }
@@ -180,11 +190,6 @@ export class Game extends Scene {
 
   private stopMinotaur(): void {
     this.minotaur.stopFollow();
-
-    if (!this.map.objectsAreAdjacent(this.player.tilePosition, this.minotaur.tilePosition)) {
-      this.minotaur.destroy();
-      this.minotaur = null;
-    }
   }
 
   private showCombatUI(): void {

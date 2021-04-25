@@ -82,7 +82,7 @@ export class NoiseMeter {
             this.noiseLevel += NOISE_MOVE_LOUD;
         }
 
-        if (this.noiseLevel >= NOISE_SPAWN_MINOTAUR && !this.thresholdReached) {
+        if (this.noiseLevel >= NOISE_SPAWN_MINOTAUR) {
             console.log('NOISE HIGH');
             this.noiseThreshold.emit('noise-high');
             this.thresholdReached = true;

@@ -18,15 +18,13 @@ export class Minotaur extends Creature {
     }
 
     startFollow(path: Phaser.Types.Math.Vector2Like[]): void {
+        console.log('start follow', path);
         this.path = path;
         this.isFollowing = true;
     }
 
     followPath(playerPos: Phaser.Types.Math.Vector2Like): void {
-        if (!this.isFollowing) {
-            return;
-        }
-
+        console.log('Minotaur take move');
         const nextPosition = this.path.shift();
 
         if (this.tilePosition.x === playerPos.x && this.tilePosition.y === playerPos.y) {

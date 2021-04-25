@@ -8,6 +8,8 @@ import { HideTimer } from '../entities/hide-timer';
 
 const ARROW_FRAME_ACTIVE = 0;
 const ARROW_FRAME_DISABLED = 2;
+const SEARCH_BUTTON_Y = 664;
+const SEARCH_BUTTON_Y_OFFSCREEN = 900;
 
 export class Game extends Scene {
   private map: Map;
@@ -24,6 +26,8 @@ export class Game extends Scene {
   hideUI: HideTimer;
   ui: Phaser.GameObjects.Image;
   arrows: { n: Phaser.GameObjects.Sprite; e: Phaser.GameObjects.Sprite; s: Phaser.GameObjects.Sprite; w: Phaser.GameObjects.Sprite; };
+  searchButton: Phaser.GameObjects.Image;
+  searchButtonTween: Phaser.Tweens.Tween;
 
   constructor() {
     super({
@@ -49,6 +53,12 @@ export class Game extends Scene {
     this.ui = this.add.image(0, this.cameras.main.height, 'main_ui');
     this.ui.setScrollFactor(0);
     this.ui.setOrigin(0, 1);
+
+    this.searchButton = this.add.image(745, SEARCH_BUTTON_Y_OFFSCREEN, 'search');
+    this.searchButton.setScrollFactor(0);
+    this.searchButton.setInteractive({
+      useHandCursor: true
+    });
 
     this.arrows = {
       n: this.add.sprite(259, 613, 'arrow', 2),
@@ -145,7 +155,21 @@ export class Game extends Scene {
     const treasure = this.map.hasTreasure(pos);
 
     if (treasure) {
-      console.log('show Search UI');
+      // show search button
+      this.searchButtonTween = this.tweens.add({
+        targets: this.searchButton,
+        y: SEARCH_BUTTON_Y,
+        ease: Phaser.Math.Easing.Expo.Out,
+        duration: 300
+      });
+    } else if (this.searchButton.y !== SEARCH_BUTTON_Y_OFFSCREEN) {
+      this.searchButtonTween.stop(1);
+      this.searchButtonTween = this.tweens.add({
+        targets: this.searchButton,
+        y: SEARCH_BUTTON_Y_OFFSCREEN,
+        ease: Phaser.Math.Easing.Expo.In,
+        duration: 300
+      });
     }
 
     // only keep 20 tiles in history

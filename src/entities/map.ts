@@ -1,16 +1,16 @@
 import { Scene } from 'phaser';
-import { CELL_PER_TILE, CELL_WALKABLE } from '../config';
+import { CELL_EXIT, CELL_PER_TILE, CELL_WALKABLE } from '../config';
 import { Tile } from './tile';
 
 export class Map {
+    scene: Scene;
     tilemap: Phaser.Tilemaps.Tilemap;
-
     tiles: Tile[][];
     tileSize: {
         width: number;
         height: number;
     }
-    scene: Scene;
+    exits: Phaser.Tilemaps.Tile[] = [];
 
     constructor(scene: Scene) {
         this.scene = scene;
@@ -20,13 +20,25 @@ export class Map {
         });
 
         const tileset = this.tilemap.addTilesetImage('labyrinth-tiles-32', 'labyrinth-tiles');
-        const tileLayer = this.tilemap.createLayer('map-1', tileset);
+        const mapLayer = this.tilemap.createLayer('map-1', tileset);
 
-        tileLayer.layer.data.forEach(row => {
+        mapLayer.layer.data.forEach(row => {
             row.forEach(tile => {
                 tile.alpha = 0;
             });
         });
+
+        const roomLayer = this.tilemap.createLayer('rooms-1', tileset);
+
+        roomLayer.layer.data.forEach(row => {
+            row.forEach(tile => {
+                if (tile.index === CELL_EXIT) {
+                    this.exits.push(tile);
+                }
+            });
+        });
+
+        this.tilemap.setLayer('map-1');
     }
 
     /* getValidMovePositions(pos: Phaser.Types.Math.Vector2Like): ValidMovePositions {

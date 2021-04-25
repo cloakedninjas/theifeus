@@ -30,7 +30,10 @@ export class Game extends Scene {
 
     const player = new Player(this, this.map);
     this.player = this.add.existing(player);
-    this.player.setTilePosition(1, 1);
+
+    const startPoint: Phaser.Tilemaps.Tile = Phaser.Utils.Array.GetRandom(this.map.exits);
+
+    this.player.setTilePosition(startPoint.x, startPoint.y);
     this.playerMoved(this.player.tilePosition);
 
     this.setupCameraControls();

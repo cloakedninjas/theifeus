@@ -121,8 +121,8 @@
          "columns":8,
          "firstgid":1,
          "image":"labyrinth-tiles-32.png",
-         "imageheight":384,
-         "imagewidth":1024,
+         "imageheight":96,
+         "imagewidth":256,
          "margin":0,
          "name":"labyrinth-tiles-32",
          "spacing":0,
@@ -161,38 +161,6 @@
                         {
                          "tileid":4,
                          "wangid":[0, 1, 0, 1, 0, 0, 0, 1]
-                        }, 
-                        {
-                         "tileid":8,
-                         "wangid":[0, 1, 0, 1, 0, 0, 0, 0]
-                        }, 
-                        {
-                         "tileid":9,
-                         "wangid":[0, 1, 0, 1, 0, 1, 0, 1]
-                        }, 
-                        {
-                         "tileid":10,
-                         "wangid":[0, 0, 0, 0, 0, 1, 0, 1]
-                        }, 
-                        {
-                         "tileid":11,
-                         "wangid":[0, 0, 0, 1, 0, 1, 0, 1]
-                        }, 
-                        {
-                         "tileid":12,
-                         "wangid":[0, 1, 0, 1, 0, 1, 0, 0]
-                        }, 
-                        {
-                         "tileid":16,
-                         "wangid":[0, 1, 0, 0, 0, 0, 0, 0]
-                        }, 
-                        {
-                         "tileid":17,
-                         "wangid":[0, 1, 0, 0, 0, 0, 0, 1]
-                        }, 
-                        {
-                         "tileid":18,
-                         "wangid":[0, 0, 0, 0, 0, 0, 0, 1]
                         }]
                 }]
         }],

@@ -1,5 +1,5 @@
 import { GameObjects, Math, Scene, Tweens } from 'phaser';
-import { MOVE_TIME_LOUD, MOVE_TIME_QUIET, NOISE_MOVE_LOUD, NOISE_MOVE_QUIET, NOISE_SPAWN_MINOTAUR } from '../config';
+import { NOISE_MOVE_LOUD, NOISE_MOVE_QUIET, NOISE_SPAWN_MINOTAUR } from '../config';
 
 const WIDTH = 200;
 const PADDLE_WIDTH = 10;
@@ -19,7 +19,8 @@ export class NoiseMeter {
         max: 0
     };
     noiseLevel = 0;
-    minotaurAlerted: Phaser.Events.EventEmitter;
+    noiseThreshold: Phaser.Events.EventEmitter;
+    thresholdReached = false;
 
     constructor(scene: Scene) {
         this.scene = scene;
@@ -41,7 +42,7 @@ export class NoiseMeter {
         this.bg.setScrollFactor(0);
         this.paddle.setScrollFactor(0);
 
-        this.minotaurAlerted =  new Phaser.Events.EventEmitter();
+        this.noiseThreshold = new Phaser.Events.EventEmitter();
 
         this.start();
     }
@@ -81,8 +82,14 @@ export class NoiseMeter {
             this.noiseLevel += NOISE_MOVE_LOUD;
         }
 
-        if (this.noiseLevel >= NOISE_SPAWN_MINOTAUR) {
-            this.minotaurAlerted.emit('minotaur-alerted');
+        if (this.noiseLevel >= NOISE_SPAWN_MINOTAUR && !this.thresholdReached) {
+            console.log('NOISE HIGH');
+            this.noiseThreshold.emit('noise-high');
+            this.thresholdReached = true;
+        } else if (this.thresholdReached && this.noiseLevel < NOISE_SPAWN_MINOTAUR) {
+            console.log('NOISE LOW');
+            this.noiseThreshold.emit('noise-low');
+            this.thresholdReached = false;
         }
 
         return isQuiet;

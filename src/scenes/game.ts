@@ -15,6 +15,7 @@ export class Game extends Scene {
   private playerMemory: Phaser.Types.Math.Vector2Like[] = [];
   private treasureCollected = 0;
   playerMoveTween: Phaser.Tweens.Tween;
+  canMove = true;
 
   constructor() {
     super({
@@ -34,7 +35,8 @@ export class Game extends Scene {
     this.setupKeyboardControls();
 
     this.noiseMeter = new NoiseMeter(this);
-    this.noiseMeter.minotaurAlerted.on('minotaur-alerted', this.summonMinotaur, this);
+    this.noiseMeter.noiseThreshold.on('noise-high', this.summonMinotaur, this);
+    this.noiseMeter.noiseThreshold.on('noise-low', this.stopMinotaur, this);
 
     // debug
     window['scene'] = this;
@@ -60,7 +62,7 @@ export class Game extends Scene {
   }
 
   private tryMovingPlayer(vectorX: number, vectorY: number): void {
-    if (this.playerMoveTween?.isPlaying()) {
+    if (!this.canMove || this.playerMoveTween?.isPlaying()) {
       return;
     }
 
@@ -168,15 +170,25 @@ export class Game extends Scene {
           const minotaur = new Minotaur(this, this.map);
           this.minotaur = this.add.existing(minotaur);
           this.minotaur.setTilePosition(this.playerTileHistory[i].x, this.playerTileHistory[i].y);
-          this.minotaur.setPath(this.playerTileHistory.slice(historyStartIndex));
-          this.minotaur.attacking.on('attacking', this.showHideUI, this);
+          this.minotaur.startFollow(this.playerTileHistory.slice(historyStartIndex));
+          this.minotaur.attacking.on('attacking', this.showCombatUI, this);
           break;
         }
       }
     }
   }
 
-  private showHideUI(): void {
+  private stopMinotaur(): void {
+    this.minotaur.stopFollow();
+
+    if (!this.map.objectsAreAdjacent(this.player.tilePosition, this.minotaur.tilePosition)) {
+      this.minotaur.destroy();
+      this.minotaur = null;
+    }
+  }
+
+  private showCombatUI(): void {
+    this.canMove = false;
     console.log('UI');
   }
 }

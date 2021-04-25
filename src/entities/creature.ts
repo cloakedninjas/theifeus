@@ -1,5 +1,6 @@
 import { GameObjects, Scene } from 'phaser';
 import { HALF_TILE_SIZE, TILE_SIZE } from '../config';
+import { Map } from './map'
 
 export class Creature extends GameObjects.Sprite {
 
@@ -7,9 +8,11 @@ export class Creature extends GameObjects.Sprite {
         x: 0,
         y: 0
     };
+    map: Map;
 
-    constructor(scene: Scene, sprite: string) {
+    constructor(scene: Scene, sprite: string, map: Map) {
         super(scene, 0, 0, sprite);
+        this.map = map;
     }
 
     moveTo(newPosition: Phaser.Types.Math.Vector2Like, speed: number): Phaser.Tweens.Tween {

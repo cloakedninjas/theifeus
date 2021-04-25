@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { CELL_PER_TILE, MEMORY_FORGOT, MOVE_TIME_LOUD, MOVE_TIME_QUIET, PROB_FIND_TREASURE } from '../config';
+import { CELL_PER_TILE, MEMORY_FORGOT, MINOTAUR_MOVE_TIME, MOVE_TIME_LOUD, MOVE_TIME_QUIET, PROB_FIND_TREASURE } from '../config';
 import { Map } from '../entities/map';
 import { Minotaur } from '../entities/minotaur';
 import { Player } from '../entities/player';
@@ -25,7 +25,7 @@ export class Game extends Scene {
   create(): void {
     this.map = new Map(this);
 
-    const player = new Player(this);
+    const player = new Player(this, this.map);
     this.player = this.add.existing(player);
     this.player.setTilePosition(52, 58);
     this.playerMoved(this.player.tilePosition);
@@ -55,7 +55,7 @@ export class Game extends Scene {
     //cursors.space.on('up', () => this.performAction());
 
     this.input.on('pointerup', () => {
-      this.searchRoom();
+      //this.searchRoom();
     });
   }
 
@@ -110,9 +110,13 @@ export class Game extends Scene {
       const tileForgotten = this.playerMemory.shift();
       this.map.fadeFromMemory(tileForgotten, true);
     }
+
+    if (this.minotaur) {
+      this.minotaur.followPath(pos);
+    }
   }
 
-  private performAction(): void {
+  /* private performAction(): void {
     if (this.noiseMeter.bg.visible && this.noiseMeter.tween.isPlaying) {
       const quietMove = this.noiseMeter.stop();
 
@@ -121,9 +125,9 @@ export class Game extends Scene {
       this.player.moveTo(this.requestedMoveLocation, quietMove ? MOVE_TIME_QUIET : MOVE_TIME_LOUD)
         .on('complete', () => this.map.playerEnterredTile(this.requestedMoveLocation));
     }
-  }
+  } */
 
-  private searchRoom(): void {
+  /* private searchRoom(): void {
     const currentTile = this.map.getTileAt(this.player.tilePosition);
 
     if (currentTile.properties.searched) {
@@ -135,13 +139,18 @@ export class Game extends Scene {
     }
 
     currentTile.properties.searched = true;
-  }
+  } */
 
   private summonMinotaur(): void {
     if (!this.minotaur) {
       // try to spawn minotaur someplace in history, not currently in memory
+      const historyStartIndex = this.playerTileHistory.length - this.playerMemory.length - 1;
 
-      for (let i = this.playerTileHistory.length - 1; i >= 0; i--) {
+      if (historyStartIndex < 0) {
+        return;
+      }
+
+      for (let i = historyStartIndex; i >= 0; i--) {
         const tileHistory = this.playerTileHistory[i];
         let tileVisisble = false;
 
@@ -156,12 +165,18 @@ export class Game extends Scene {
 
         if (!tileVisisble) {
           console.error('I HEAR YOU!');
-          const minotaur = new Minotaur(this);
+          const minotaur = new Minotaur(this, this.map);
           this.minotaur = this.add.existing(minotaur);
-          this.minotaur.setTilePosition(this.playerTileHistory[1].x, this.playerTileHistory[1].y);
+          this.minotaur.setTilePosition(this.playerTileHistory[i].x, this.playerTileHistory[i].y);
+          this.minotaur.setPath(this.playerTileHistory.slice(historyStartIndex));
+          this.minotaur.attacking.on('attacking', this.showHideUI, this);
           break;
         }
       }
     }
+  }
+
+  private showHideUI(): void {
+    console.log('UI');
   }
 }

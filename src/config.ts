@@ -4,6 +4,7 @@ export const HALF_TILE_SIZE = TILE_SIZE / 2;
 
 export const MOVE_TIME_QUIET = 500;
 export const MOVE_TIME_LOUD = 300;
+export const MINOTAUR_MOVE_TIME = 300;
 
 export const MEMORY_FADE = 6;
 export const MEMORY_FORGOT = 6;

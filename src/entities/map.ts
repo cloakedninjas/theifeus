@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { CELL_PER_TILE } from '../config';
 import { Tile } from './tile';
 
 export class Map {
@@ -44,7 +45,6 @@ export class Map {
 
     playerEnterredTile(position: Phaser.Types.Math.Vector2Like): void {
         const tiles = this.getCellsAtTile(position);
-        //tiles.forEach(tile => tile.tint = 0xffffff);
         tiles.forEach(tile => tile.alpha = 1);
         tiles.forEach(tile => tile.tint = 0xffffff);
     }
@@ -73,6 +73,18 @@ export class Map {
             this.tilemap.getTileAt(position.x, position.y + 1),
             this.tilemap.getTileAt(position.x + 1, position.y + 1)
         ];
+    }
+
+    objectsAreAdjacent(a: Phaser.Types.Math.Vector2Like, b: Phaser.Types.Math.Vector2Like): boolean {
+        if (a.x === b.x && Math.abs(a.y - b.y) === CELL_PER_TILE) {
+            return true;
+        }
+
+        if (a.y === b.y && Math.abs(a.x - b.x) === CELL_PER_TILE) {
+            return true;
+        }
+
+        return false;
     }
 }
 

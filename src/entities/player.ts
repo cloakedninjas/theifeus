@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
 import { Creature } from './creature'
+import { Map } from './map';
 
 export class Player extends Creature {
 
@@ -8,7 +9,7 @@ export class Player extends Creature {
         y: 0
     };
 
-    constructor(scene: Scene) {
-        super(scene, 'player');
+    constructor(scene: Scene, map: Map) {
+        super(scene, 'player', map);
     }
 }

@@ -53,7 +53,7 @@ export class Game extends Scene {
     this.player = this.add.existing(player);
 
     this.noiseMeter = new NoiseMeter(this);
-    this.noiseMeter.noiseThreshold.on('noise-high', this.summonMinotaur, this);
+    this.noiseMeter.noiseThreshold.on('noise-high', this.spawnMinotaur, this);
     this.noiseMeter.noiseThreshold.on('noise-low', this.stopMinotaur, this);
 
     this.ui = this.add.image(0, this.cameras.main.height, 'main_ui');
@@ -214,7 +214,7 @@ export class Game extends Scene {
 
     if (this.minotaur) {
       if (this.minotaur.isFollowing) {
-        this.minotaur.followPath(pos);
+        this.minotaur.continueOnPath(pos);
       } else {
         if (!this.map.objectsAreAdjacent(this.player.tilePosition, this.minotaur.tilePosition)) {
           this.minotaurWalkAway();
@@ -279,7 +279,7 @@ export class Game extends Scene {
     currentTile.properties.searched = true;
   } */
 
-  private summonMinotaur(): void {
+  private spawnMinotaur(): void {
     if (!this.minotaur) {
       // try to spawn minotaur someplace in history, not currently in memory
       const historyStartIndex = this.playerTileHistory.length - this.playerMemory.length - 1;
@@ -304,6 +304,7 @@ export class Game extends Scene {
         if (!tileVisisble) {
           const minotaur = new Minotaur(this, this.map);
           this.minotaur = this.add.existing(minotaur);
+          this.bringUIToFront();
 
           this.minotaur.setTilePosition(this.playerTileHistory[i].x, this.playerTileHistory[i].y);
           this.minotaur.startFollow(this.playerTileHistory.slice(i + 1));
@@ -345,6 +346,17 @@ export class Game extends Scene {
   private minotaurWalkAway(): void {
     this.minotaur.destroy();
     this.minotaur = null;
+  }
+
+  private bringUIToFront() {
+    this.children.bringToTop(this.ui);
+    this.children.bringToTop(this.arrows.n);
+    this.children.bringToTop(this.arrows.e);
+    this.children.bringToTop(this.arrows.s);
+    this.children.bringToTop(this.arrows.w);
+    this.children.bringToTop(this.noiseMeter.badgeQuiet);
+    this.children.bringToTop(this.noiseMeter.badgeLoud);
+    this.children.bringToTop(this.searchButton);
   }
 }
 

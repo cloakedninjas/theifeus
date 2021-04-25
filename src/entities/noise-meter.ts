@@ -25,6 +25,7 @@ export class NoiseMeter {
     noiseThreshold: Phaser.Events.EventEmitter;
     thresholdReached = false;
     canEmit = true;
+    badgeTween: Tweens.Tween;
 
     constructor(scene: Scene) {
         this.scene = scene;
@@ -45,8 +46,10 @@ export class NoiseMeter {
 
         this.badgeLoud = scene.add.image(568, 721, 'loud');
         this.badgeLoud.setScrollFactor(0);
+        this.badgeLoud.alpha = 0;
         this.badgeQuiet = scene.add.image(456, 721, 'silent');
         this.badgeQuiet.setScrollFactor(0);
+        this.badgeQuiet.alpha = 0;
 
         this.noiseThreshold = new Phaser.Events.EventEmitter();
 
@@ -85,14 +88,34 @@ export class NoiseMeter {
     }
 
     getNoiseReading(): boolean {
-        const x = this.paddle.x + this.left;
-        const isQuiet = x > this.safeArea.min && x < this.safeArea.max - PADDLE_WIDTH;
+        const isQuiet = this.paddle.x > this.safeArea.min && this.paddle.x < this.safeArea.max;
+        let badge: GameObjects.Image;
 
         if (isQuiet) {
             this.noiseLevel -= NOISE_MOVE_QUIET;
+            badge = this.badgeQuiet;
         } else {
             this.noiseLevel += NOISE_MOVE_LOUD;
+            badge = this.badgeLoud;
         }
+
+        if (this.badgeTween) {
+            this.badgeTween.stop(1);
+        }
+
+        this.badgeTween = this.scene.tweens.add({
+            targets: badge,
+            alpha: 1,
+            duration: 200,
+            onComplete: () => {
+                this.badgeTween.stop(1);
+                this.badgeTween = this.scene.tweens.add({
+                    targets: badge,
+                    alpha: 0,
+                    duration: 800
+                });
+            }
+        });
 
         if (this.canEmit) {
             if (this.noiseLevel >= NOISE_SPAWN_MINOTAUR) {

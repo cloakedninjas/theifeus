@@ -41,15 +41,6 @@ export class Map {
         this.tilemap.setLayer('map-1');
     }
 
-    /* getValidMovePositions(pos: Phaser.Types.Math.Vector2Like): ValidMovePositions {
-        return {
-            n: this.tilemap.getTileAt(pos.x, pos.y - 1)?.properties.walkable,
-            e: this.tilemap.getTileAt(pos.x + 1, pos.y)?.properties.walkable,
-            s: this.tilemap.getTileAt(pos.x, pos.y + 1)?.properties.walkable,
-            w: this.tilemap.getTileAt(pos.x - 1, pos.y)?.properties.walkable
-        };
-    } */
-
     isWalkableTile(pos: Phaser.Types.Math.Vector2Like): boolean {
         if (this.isEdgeTile(pos)) {
             return false;

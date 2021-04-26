@@ -42,6 +42,15 @@ export class Game extends Scene {
       visible: false
     };
 
+  music: {
+    ambient1: Phaser.Sound.BaseSound,
+    ambient2: Phaser.Sound.BaseSound,
+    minotaurSearching: Phaser.Sound.BaseSound,
+    hunted: Phaser.Sound.BaseSound,
+    currentTrack: Phaser.Sound.BaseSound,
+    tween: Phaser.Tweens.Tween
+  };
+
   constructor() {
     super({
       key: 'GameScene'
@@ -121,6 +130,17 @@ export class Game extends Scene {
 
     this.setupCameraControls();
     this.setupKeyboardControls();
+
+    this.music = {
+      ambient1: this.sound.add('exploring1'),
+      ambient2: this.sound.add('exploring2'),
+      hunted: this.sound.add('noescape'),
+      minotaurSearching: this.sound.add('hide'),
+      currentTrack: null,
+      tween: null
+    };
+
+    this.playMusic();
 
     // debug
     window['scene'] = this;
@@ -305,7 +325,7 @@ export class Game extends Scene {
       } else {
         this.huntedUI.removeTime();
       }
-    } else if (this.searchButton.y === SEARCH_BUTTON_Y) {
+    } else if (this.searchButton.y !== SEARCH_BUTTON_Y_OFFSCREEN) {
       this.collectTreasure();
     }
   }
@@ -354,6 +374,8 @@ export class Game extends Scene {
           this.minotaur.setTilePosition(this.playerTileHistory[i].x, this.playerTileHistory[i].y);
           this.minotaur.startFollow(this.playerTileHistory.slice(i + 1));
           this.minotaur.attacking.on('attacking', this.showHuntedUI, this);
+
+          this.playMusic();
           break;
         }
       }
@@ -386,11 +408,13 @@ export class Game extends Scene {
     });
 
     this.noiseMeter.disableThresholds();
+    this.playMusic();
   }
 
   private minotaurWalkAway(): void {
     this.minotaur.destroy();
     this.minotaur = null;
+    this.playMusic();
   }
 
   private bringUIToFront() {
@@ -464,6 +488,31 @@ export class Game extends Scene {
       duration: 300,
       ease: Phaser.Math.Easing.Sine.Out
     });
+  }
+
+  private playMusic() {
+    if (this.music.currentTrack?.isPlaying) {
+      if (this.music.tween) {
+        this.music.tween.complete(1);
+      }
+
+      this.music.tween = this.tweens.add({
+        targets: this.music.currentTrack,
+        volume: 0,
+        duration: 500
+      });
+    }
+
+    if (this.huntedUI) {
+      this.music.currentTrack = this.music.hunted;
+    } else if (this.minotaur) {
+      this.music.currentTrack = this.music.minotaurSearching;
+    } else {
+      const random = Math.ceil(Math.random() * 2);
+      this.music.currentTrack = this.music[`ambient${random}`];
+    }
+
+    this.music.currentTrack.play();
   }
 
   private gameOver(alive: boolean) {

@@ -24,3 +24,7 @@ export const DIR_VECTOR = {
     y: 0
   }
 };
+
+export const INTERACTIVE = {
+  cursor: 'pointer'
+};

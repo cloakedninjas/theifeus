@@ -5,7 +5,7 @@ import { Minotaur } from '../entities/minotaur';
 import { Player } from '../entities/player';
 import { NoiseMeter } from '../entities/noise-meter';
 import { HuntedUI } from '../entities/hunted-ui';
-import { DIR_VECTOR, Treasure } from '../lib/types';
+import { DIR_VECTOR, INTERACTIVE, Treasure } from '../lib/types';
 
 const ARROW_FRAME_ACTIVE = 0;
 const ARROW_FRAME_HOVER = 1;
@@ -35,10 +35,14 @@ export class Game extends Scene {
   leave: {
     bg: Phaser.GameObjects.Graphics;
     modal: Phaser.GameObjects.Image;
+    leftArrow: Phaser.GameObjects.Image;
+    rightArrow: Phaser.GameObjects.Image;
     visible: boolean;
   } = {
       bg: null,
       modal: null,
+      leftArrow: null,
+      rightArrow: null,
       visible: false
     };
 
@@ -82,9 +86,7 @@ export class Game extends Scene {
 
     this.searchButton = this.add.image(745, SEARCH_BUTTON_Y_OFFSCREEN, 'search');
     this.searchButton.setScrollFactor(0);
-    this.searchButton.setInteractive({
-      useHandCursor: true
-    });
+    this.searchButton.setInteractive(INTERACTIVE);
     this.searchButton.on('pointerup', this.collectTreasure, this);
 
     this.arrows = {
@@ -102,9 +104,7 @@ export class Game extends Scene {
       if (Object.prototype.hasOwnProperty.call(this.arrows, key)) {
         const arrow: Phaser.GameObjects.Sprite = this.arrows[key];
         arrow.setScrollFactor(0);
-        arrow.setInteractive({
-          useHandCursor: true
-        });
+        arrow.setInteractive(INTERACTIVE);
 
         arrow.on('pointerdown', () => this.handleDirPress(key));
 
@@ -186,6 +186,9 @@ export class Game extends Scene {
           }
         });
       } else if (vector.x === 1) {
+        this.leave.leftArrow.visible = false;
+        this.leave.rightArrow.visible = false;
+
         this.tweens.add({
           targets: this.leave.bg,
           alpha: 0,
@@ -219,14 +222,14 @@ export class Game extends Scene {
     };
 
     if (this.map.isExiting(this.player.tilePosition, destinationPosition)) {
-      this.showExitPrompt();
+      this.showLeaveUI();
       return;
     }
 
     if (this.map.isWalkableTile(destinationPosition)) {
       this.requestedMoveLocation = {
         x: this.player.tilePosition.x + (vector.x * CELL_PER_TILE),
-        y: this.player.tilePosition.y + (vector.y* CELL_PER_TILE)
+        y: this.player.tilePosition.y + (vector.y * CELL_PER_TILE)
       };
 
       const isQuiet = this.noiseMeter.getNoiseReading();
@@ -461,7 +464,7 @@ export class Game extends Scene {
     });
   }
 
-  private showExitPrompt(): void {
+  private showLeaveUI(): void {
     this.canMove = false;
 
     if (!this.leave.bg) {
@@ -476,6 +479,43 @@ export class Game extends Scene {
       modal.setOrigin(0.5, 0);
       modal.setScrollFactor(0);
       this.leave.modal = modal;
+
+      ['leftArrow', 'rightArrow'].forEach(arrowName => {
+        const arrow = this.add.image(200, 670, 'arrow');
+        this.leave[arrowName] = arrow;
+        let dir;
+
+        if (arrowName === 'leftArrow') {
+          arrow.angle = 270;
+          arrow.x = 415;
+          dir = 'w';
+        } else {
+          arrow.angle = 90;
+          arrow.x = 607;
+          dir = 'e';
+        }
+
+        arrow.setScrollFactor(0);
+        arrow.visible = false;
+        arrow.setInteractive(INTERACTIVE)
+
+        arrow.on('pointerdown', () => {
+          this.handleDirPress(dir);
+        });
+
+        arrow.on('pointerover', () => {
+          if (arrow.frame.name as unknown as number === ARROW_FRAME_ACTIVE) {
+            arrow.setData('prev-frame', arrow.frame.name);
+            arrow.setFrame(ARROW_FRAME_HOVER);
+          }
+        });
+
+        arrow.on('pointerout', () => {
+          if (arrow.frame.name as unknown as number === ARROW_FRAME_HOVER) {
+            arrow.setFrame(arrow.getData('prev-frame'));
+          }
+        });
+      })
     }
 
     this.leave.visible = true;
@@ -490,7 +530,11 @@ export class Game extends Scene {
       targets: this.leave.modal,
       y: this.cameras.main.height - this.leave.modal.height,
       duration: 300,
-      ease: Phaser.Math.Easing.Sine.Out
+      ease: Phaser.Math.Easing.Sine.Out,
+      onComplete: () => {
+        this.leave.leftArrow.visible = true;
+        this.leave.rightArrow.visible = true;
+      }
     });
   }
 

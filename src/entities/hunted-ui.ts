@@ -1,5 +1,6 @@
 import { GameObjects, Scene, Tweens } from 'phaser';
 import { HIDE_FAIL_TIME, HIDE_INITIAL_TIMEOUT, HIDE_SUCCESS_TIME } from '../config';
+import { INTERACTIVE } from '../lib/types';
 import { NoiseMeter } from './noise-meter';
 
 const WIDTH = 315;
@@ -55,9 +56,7 @@ export class HuntedUI {
         this.button = scene.add.image(this.x, 710, 'hide');
         this.button.setScrollFactor(0);
         this.button.visible = false;
-        this.button.setInteractive({
-            useHandCursor: true
-        });
+        this.button.setInteractive(INTERACTIVE);
 
         this.button.on('pointerover', () => {
             this.button.setFrame(1);

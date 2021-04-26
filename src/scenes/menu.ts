@@ -72,29 +72,37 @@ export default class Menu extends Scene {
             }
         });
 
+        const x = 835;
+        const y = 690
+        const width = 175;
+        const height = 20;
+        const interactive = {
+            cursor: 'pointer'
+        };
 
-        /* const graphics = this.add.graphics();
+        const dj = this.add.rectangle(x, y, width, height);
+        dj.setInteractive(interactive);
+        dj.setOrigin(0, 0);
+        dj.on('pointerdown', this.creditClick.bind(this, 'cloakedninjas'));
 
-        graphics.setInteractive(new Phaser.Geom.Rectangle(84, 606, 360, 75), Phaser.Geom.Rectangle.Contains);
-        graphics.on(Phaser.Input.Events.POINTER_DOWN, () => {
-            document.location.reload();
-        }); */
+        const jk = this.add.rectangle(x, y + 25, width, height);
+        jk.setInteractive(interactive);
+        jk.setOrigin(0, 0);
+        jk.on('pointerdown', this.creditClick.bind(this, 'thedorkulon'));
+
+        const al = this.add.rectangle(x, y + 45, width, height);
+        al.setInteractive(interactive);
+        al.setOrigin(0, 0);
+        al.on('pointerdown', this.creditClick.bind(this, 'treslapin'));
 
         const music = this.sound.add('menu');
 
-        // debug
-        
         music.play({
             volume: 1
         });
-
-
-
-
-
     }
 
-    shutdown(): void {
-        console.log(1);
+    private creditClick(person: string): void {
+        window.open('https://twitter.com/' + person);
     }
 }

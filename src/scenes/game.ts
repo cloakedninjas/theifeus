@@ -373,6 +373,7 @@ export class Game extends Scene {
           this.minotaur.attacking.on('attacking', this.showHuntedUI, this);
 
           this.playMusic();
+          this.sound.play(`bellow${Math.ceil(Math.random() * 2)}`);
           break;
         }
       }

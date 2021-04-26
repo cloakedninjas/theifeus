@@ -149,7 +149,7 @@ export class Game extends Scene {
 
     // debug
     this.input.on('pointerup', () => {
-      this.gameOver(false);
+      //this.gameOver(false);
     });
   }
 

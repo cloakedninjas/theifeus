@@ -29,18 +29,22 @@ export default class Score extends Scene {
     }
 
     create(): void {
-        console.log(this.alive, this.treasures);
-
         let loot = 0;
 
         this.treasures.forEach(treasure => {
             loot += treasure.value;
         });
 
-        // debug
-        loot = 4500;
-
         const totalScore = loot * 2;
+
+        // bg
+        const bg = this.add.image(0, 0, 'end_bg');
+        bg.setOrigin(0, 0);
+
+        this.add.image(878, 588, 'coins');
+        this.add.image(600, 486, 'diamond');
+        this.add.image(715, 377, this.alive ? 'alive' : 'dead');
+        this.add.image(260, 80, this.alive ? 'escaped' : 'death');
 
         const labelFontSize = '30px';
         const labelX = X_POS + 100;
@@ -97,11 +101,7 @@ export default class Score extends Scene {
 
         const graphics = this.add.graphics();
 
-        // debug
-        graphics.fillStyle(0xffffff);
-        graphics.fillRect(531, 275, 66, 70);
-
-        graphics.setInteractive(new Phaser.Geom.Rectangle(531, 275, 66, 70), Phaser.Geom.Rectangle.Contains);
+        graphics.setInteractive(new Phaser.Geom.Rectangle(84, 606, 360, 75), Phaser.Geom.Rectangle.Contains);
         graphics.on(Phaser.Input.Events.POINTER_DOWN, () => {
             document.location.reload();
         });

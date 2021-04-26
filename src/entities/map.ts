@@ -88,8 +88,13 @@ export class Map {
         return onExitTile && this.isEdgeTile(destinationPosition);
     }
 
-    hasTreasure(pos: Phaser.Types.Math.Vector2Like): boolean {
-        return this.tilemap.getTileAt(pos.x, pos.y, true, `rooms-${this.mapIndex}`).index === CELL_TREASURE;
+    hasTreasure(pos: Phaser.Types.Math.Vector2Like): number {
+        const tileIndex = this.tilemap.getTileAt(pos.x, pos.y, true, `rooms-${this.mapIndex}`).index;
+        if (tileIndex === CELL_TREASURE || tileIndex === CELL_DIAMOND) {
+            return tileIndex;
+        }
+
+        return null;
     }
 
     playerEnterredTile(position: Phaser.Types.Math.Vector2Like): void {
@@ -207,7 +212,7 @@ export class Map {
     }
 
     removeTreasureAt(pos: Phaser.Types.Math.Vector2Like): void {
-        this.tilemap.putTileAt(-1, pos.x, pos.y, true, 'rooms-1');
+        this.tilemap.putTileAt(-1, pos.x, pos.y, true, `rooms-${this.mapIndex}`);
     }
 }
 

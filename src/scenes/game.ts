@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { CELL_PER_TILE, CELL_WALKABLE, MEMORY_FORGOT, MOVE_TIME_LOUD, MOVE_TIME_QUIET } from '../config';
+import { CELL_DIAMOND, CELL_PER_TILE, CELL_WALKABLE, MEMORY_FORGOT, MOVE_TIME_LOUD, MOVE_TIME_QUIET } from '../config';
 import { Map } from '../entities/map';
 import { Minotaur } from '../entities/minotaur';
 import { Player } from '../entities/player';
@@ -22,6 +22,7 @@ export class Game extends Scene {
   private playerMemory: Phaser.Types.Math.Vector2Like[] = [];
   private treasures: Treasure[] = [];
   private treasureCollected: Treasure[] = [];
+  private treasureAtTile: number;
   playerMoveTween: Phaser.Tweens.Tween;
   canMove = true;
   huntedUI: HuntedUI;
@@ -173,9 +174,9 @@ export class Game extends Scene {
       ...pos
     });
 
-    const treasure = this.map.hasTreasure(pos);
+    this.treasureAtTile = this.map.hasTreasure(pos);
 
-    if (treasure) {
+    if (this.treasureAtTile !== null) {
       // show search button
       this.searchButtonTween = this.tweens.add({
         targets: this.searchButton,
@@ -358,7 +359,14 @@ export class Game extends Scene {
   }
 
   private collectTreasure(): void {
-    const treasure = this.treasures.shift();
+    let treasure;
+
+    if (this.treasureAtTile === CELL_DIAMOND) {
+      treasure = this.treasures.pop();
+    } else {
+      treasure = this.treasures.shift();
+    }
+
     this.treasureCollected.push(treasure);
 
     if (treasure.noise) {

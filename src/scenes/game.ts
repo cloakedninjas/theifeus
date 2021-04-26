@@ -169,8 +169,9 @@ export class Game extends Scene {
   }
 
   private startGame(): void {
-    this.sound.play('entermaze');
-    this.playMusic();
+    this.sound.add('entermaze')
+      .on('complete', () => this.playMusic())
+      .play();
 
     const startPoint: Phaser.Tilemaps.Tile = Phaser.Utils.Array.GetRandom(this.map.exits);
 
@@ -238,6 +239,11 @@ export class Game extends Scene {
       const isQuiet = this.noiseMeter.getNoiseReading();
       const noiseLevel = isQuiet ? MOVE_TIME_QUIET : MOVE_TIME_LOUD;
 
+      const sfx = (noiseLevel ? 'q' : 'l') + 'walk' + (Math.ceil(Math.random() * 3));
+      this.sound.play(sfx, {
+        volume: 0.2
+      });
+
       this.playerMoveTween = this.player.moveTo(this.requestedMoveLocation, noiseLevel)
         .on('complete', () => this.playerMoved(this.requestedMoveLocation));
     }
@@ -254,12 +260,7 @@ export class Game extends Scene {
 
     if (this.treasureAtTile !== null) {
       // show search button
-      this.searchButtonTween = this.tweens.add({
-        targets: this.searchButton,
-        y: SEARCH_BUTTON_Y,
-        ease: Phaser.Math.Easing.Expo.Out,
-        duration: 300
-      });
+      this.showSearchButton();
     } else if (this.searchButton.y !== SEARCH_BUTTON_Y_OFFSCREEN) {
       this.hideSearchButton();
     }
@@ -400,7 +401,7 @@ export class Game extends Scene {
 
   private showHuntedUI(): void {
     this.canMove = false;
-    
+
     this.huntedUI = new HuntedUI(this, this.noiseMeter, this.firstTimeHunted);
     this.firstTimeHunted = false;
 
@@ -431,7 +432,6 @@ export class Game extends Scene {
 
   private bringUIToFront() {
     this.children.bringToTop(this.ui);
-    //this.children.bringToTop(this.treasureUIGroup);
     this.treasureUIGroup.getChildren().forEach(child => this.children.bringToTop(child));
     this.children.bringToTop(this.arrows.n);
     this.children.bringToTop(this.arrows.e);
@@ -449,6 +449,9 @@ export class Game extends Scene {
     if (this.treasureAtTile === CELL_DIAMOND) {
       treasure = this.treasures.pop();
       icon = new Phaser.GameObjects.Image(this, 120, 684, 'heart');
+      this.sound.play('heart');
+
+      this.noiseMeter.noiseLevel += treasure.noise;
     } else {
       treasure = this.treasures.shift();
 
@@ -457,21 +460,31 @@ export class Game extends Scene {
       const x = ((collected % 5) * 40) + 761;
       const y = (Math.floor(collected / 5) * 40) + 637
       icon = new Phaser.GameObjects.Image(this, x, y, 'coin');
+      this.sound.play('treasure');
+
+      if (treasure.noise && !this.noiseMeter.getNoiseReading()) {
+        this.noiseMeter.noiseLevel += treasure.noise;
+      }
     }
 
     this.treasureUIGroup.add(icon, true);
     icon.setScrollFactor(0);
-
     this.children.bringToTop(this.searchButton);
 
     this.treasureCollected.push(treasure);
-
-    if (treasure.noise && !this.noiseMeter.getNoiseReading()) {
-      this.noiseMeter.noiseLevel += treasure.noise;
-    }
-
     this.map.removeTreasureAt(this.player.tilePosition);
+
     this.hideSearchButton();
+  }
+
+  private showSearchButton(): void {
+    this.searchButtonTween = this.tweens.add({
+      targets: this.searchButton,
+      y: SEARCH_BUTTON_Y,
+      ease: Phaser.Math.Easing.Expo.Out,
+      duration: 300
+    });
+    this.sound.play(`searchable${Math.ceil(Math.random() * 2)}`);
   }
 
   private hideSearchButton(): void {

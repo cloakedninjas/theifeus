@@ -16,7 +16,7 @@ export default class Score extends Scene {
         });
     }
 
-    init(data: any): void {
+    init(data: ScoreParams): void {
         window['scene'] = this;
         this.treasures = data.treasures;
         this.alive = data.alive;
@@ -117,4 +117,9 @@ export default class Score extends Scene {
             volume: 1
         });
     }
+}
+
+export interface ScoreParams {
+    treasures: Treasure[];
+    alive: boolean;
 }

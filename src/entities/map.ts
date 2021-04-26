@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { CELL_DIAMOND, CELL_EXIT, CELL_PER_TILE, CELL_TREASURE, CELL_WALKABLE } from '../config';
+import { CELL_DIAMOND, CELL_EXIT, CELL_PER_TILE, CELL_TREASURE, CELL_WALKABLE, MAP_VARIANTS } from '../config';
 import { Tile } from './tile';
 
 export class Map {
@@ -13,6 +13,7 @@ export class Map {
     exits: Phaser.Tilemaps.Tile[] = [];
     treasures: Phaser.Tilemaps.Tile[] = [];
     diamond: Phaser.Tilemaps.Tile;
+    mapIndex: number;
 
     constructor(scene: Scene) {
         this.scene = scene;
@@ -21,8 +22,10 @@ export class Map {
             key: 'labyrinth-tiles'
         });
 
+        this.mapIndex = Math.ceil(Math.random() * MAP_VARIANTS);
+
         const tileset = this.tilemap.addTilesetImage('labyrinth-tiles-32', 'labyrinth-tiles');
-        const mapLayer = this.tilemap.createLayer('map-1', tileset);
+        const mapLayer = this.tilemap.createLayer(`map-${this.mapIndex}`, tileset);
 
         mapLayer.layer.data.forEach(row => {
             row.forEach(tile => {
@@ -30,7 +33,7 @@ export class Map {
             });
         });
 
-        const roomLayer = this.tilemap.createLayer('rooms-1', tileset);
+        const roomLayer = this.tilemap.createLayer(`rooms-${this.mapIndex}`, tileset);
 
         // extract room items
         roomLayer.layer.data.forEach(row => {
@@ -39,15 +42,13 @@ export class Map {
                     this.exits.push(tile);
                 } else if (tile.index === CELL_TREASURE) {
                     this.treasures.push(tile);
-
-                    this.tilemap.getTileAt(tile.x, tile.y).properties.foo = 'asda';
                 } else if (tile.index === CELL_DIAMOND) {
                     this.diamond = tile;
                 }
             });
         });
 
-        this.tilemap.setLayer('map-1');
+        this.tilemap.setLayer(`map-${this.mapIndex}`);
     }
 
     isWalkableTile(pos: Phaser.Types.Math.Vector2Like): boolean {
@@ -70,7 +71,7 @@ export class Map {
     }
 
     isExit(pos: Phaser.Types.Math.Vector2Like): boolean {
-        return this.tilemap.getTileAt(pos.x, pos.y, true, 'rooms-1').index === CELL_EXIT;
+        return this.tilemap.getTileAt(pos.x, pos.y, true, `rooms-${this.mapIndex}`).index === CELL_EXIT;
     }
 
     isExiting(playerPos: Phaser.Types.Math.Vector2Like, destinationPosition: Phaser.Types.Math.Vector2Like): boolean {
@@ -88,7 +89,7 @@ export class Map {
     }
 
     hasTreasure(pos: Phaser.Types.Math.Vector2Like): boolean {
-        return this.tilemap.getTileAt(pos.x, pos.y, true, 'rooms-1').index === CELL_TREASURE;
+        return this.tilemap.getTileAt(pos.x, pos.y, true, `rooms-${this.mapIndex}`).index === CELL_TREASURE;
     }
 
     playerEnterredTile(position: Phaser.Types.Math.Vector2Like): void {

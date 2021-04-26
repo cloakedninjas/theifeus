@@ -23,3 +23,5 @@ export const NOISE_SAFE_WIDTH = 100;
 export const HIDE_INITIAL_TIMEOUT = 6000;
 export const HIDE_SUCCESS_TIME = 2500;
 export const HIDE_FAIL_TIME = 500;
+
+export const MAP_VARIANTS = 4;

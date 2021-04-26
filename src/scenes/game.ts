@@ -439,7 +439,7 @@ export class Game extends Scene {
 
     this.treasureCollected.push(treasure);
 
-    if (treasure.noise) {
+    if (treasure.noise && !this.noiseMeter.getNoiseReading()) {
       this.noiseMeter.noiseLevel += treasure.noise;
     }
 
@@ -511,6 +511,7 @@ export class Game extends Scene {
       const random = Math.ceil(Math.random() * 2);
       this.music.currentTrack = this.music[`ambient${random}`];
     }
+
 
     this.music.currentTrack.play({
       loop: true,

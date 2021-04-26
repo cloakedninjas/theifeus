@@ -42,7 +42,11 @@ export default class Score extends Scene {
         bg.setOrigin(0, 0);
 
         this.add.image(878, 588, 'coins');
-        this.add.image(600, 486, 'diamond');
+
+        if (this.gotHeart) {
+            this.add.image(600, 486, 'diamond');
+        }
+        
         this.add.image(715, 377, this.alive ? 'alive' : 'dead');
         this.add.image(260, 80, this.alive ? 'escaped' : 'death');
 

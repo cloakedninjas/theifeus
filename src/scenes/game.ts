@@ -512,10 +512,12 @@ export class Game extends Scene {
       this.music.currentTrack = this.music[`ambient${random}`];
     }
 
+    (this.music.currentTrack as Phaser.Sound.WebAudioSound).volume = 1;
     this.music.currentTrack.play();
   }
 
   private gameOver(alive: boolean) {
+    this.music.currentTrack.stop();
     this.scene.start('ScoreScene', {
       treasures: this.treasureCollected,
       alive

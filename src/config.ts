@@ -25,3 +25,5 @@ export const HIDE_SUCCESS_TIME = 2500;
 export const HIDE_FAIL_TIME = 500;
 
 export const MAP_VARIANTS = 4;
+
+export const FONT_NAME = 'Mansalva'

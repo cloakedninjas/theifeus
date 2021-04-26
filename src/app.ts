@@ -1,11 +1,13 @@
 import 'phaser';
+import { WebFontLoaderPlugin } from 'phaser3-webfont-loader';
 import Boot from './scenes/boot';
 import Preload from './scenes/preload';
 import { Game as GameScene } from './scenes/game';
+import Score from './scenes/score';
 
 const config: Phaser.Types.Core.GameConfig = {
-  title: 'Demo Game',
-  scene: [Boot, Preload, GameScene],
+  title: 'LD48',
+  scene: [Boot, Preload, GameScene, Score],
   backgroundColor: '#000',
   scale: {
     mode: Phaser.Scale.FIT,
@@ -17,6 +19,13 @@ const config: Phaser.Types.Core.GameConfig = {
       width: 1024,
       height: 768
     }
+  },
+  plugins: {
+    global: [{
+      key: 'WebFontLoader',
+      plugin: WebFontLoaderPlugin,
+      start: true
+    }]
   }
 };
 

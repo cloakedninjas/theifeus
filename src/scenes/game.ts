@@ -5,6 +5,7 @@ import { Minotaur } from '../entities/minotaur';
 import { Player } from '../entities/player';
 import { NoiseMeter } from '../entities/noise-meter';
 import { HuntedUI } from '../entities/hunted-ui';
+import { Treasure } from '../lib/types';
 
 const ARROW_FRAME_ACTIVE = 0;
 const ARROW_FRAME_HOVER = 1;
@@ -132,8 +133,7 @@ export class Game extends Scene {
 
     // debug
     this.input.on('pointerup', () => {
-      //this.searchRoom();
-      //this.showHuntedUI();
+      this.gameOver(false);
     });
   }
 
@@ -338,7 +338,7 @@ export class Game extends Scene {
       this.huntedUI.destroy();
       this.huntedUI = null;
 
-      console.log('GAME OVER');
+      this.gameOver(false);
     });
 
     this.noiseMeter.disableThresholds();
@@ -388,11 +388,11 @@ export class Game extends Scene {
         duration: 300
       });
   }
-}
 
-interface Treasure {
-  name: string;
-  description: string;
-  noise: number;
-  value: number;
+  private gameOver(alive: boolean) {
+    this.scene.start('ScoreScene', {
+      treasures: this.treasureCollected,
+      alive
+    });
+  }
 }

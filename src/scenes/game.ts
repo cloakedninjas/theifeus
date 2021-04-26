@@ -447,7 +447,9 @@ export class Game extends Scene {
       const x = ((collected % 5) * 40) + 761;
       const y = (Math.floor(collected / 5) * 40) + 637
       icon = new Phaser.GameObjects.Image(this, x, y, 'coin');
-      this.sound.play('treasure');
+      this.sound.play('treasure', {
+        volume: 0.75
+      });
 
       if (treasure.noise && !this.noiseMeter.getNoiseReading()) {
         this.noiseMeter.noiseLevel += treasure.noise;

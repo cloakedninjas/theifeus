@@ -93,17 +93,77 @@ export class Map {
     }
 
     playerEnterredTile(position: Phaser.Types.Math.Vector2Like): void {
+        // illuminate neighbours
+        const compass = this.getCompassIndexes(position);
+
+        Object.keys(compass).forEach(dir => {
+            const compassPos = compass[dir];
+
+            if (this.objectsAreAdjacent(position, compassPos)) {
+                const tiles1 = this.getCellsAtTile(compassPos)
+                tiles1.forEach(tile => {
+                    if (!tile) {
+                        return;
+                    }
+                    this.illuminateTile(tile, 0xcccccc);
+                });
+            }
+        })
+
         const tiles = this.getCellsAtTile(position);
-        tiles.forEach(tile => tile.alpha = 1);
-        tiles.forEach(tile => tile.tint = 0xffffff);
+        tiles.forEach(tile => this.illuminateTile(tile, 0xffffff));
     }
 
-    fadeFromMemory(pos: Phaser.Types.Math.Vector2Like, forgot: boolean): void {
-        if (forgot) {
-            this.getCellsAtTile(pos).forEach(tile => tile.alpha = 0);
-        } else {
-            this.getCellsAtTile(pos).forEach(tile => tile.tint = 0x333333);
+    getCompassIndexes(pos: Phaser.Types.Math.Vector2Like): CompassIndexes {
+        return {
+            n: {
+                x: pos.x,
+                y: pos.y - CELL_PER_TILE
+            },
+            e: {
+                x: pos.x + CELL_PER_TILE,
+                y: pos.y
+            },
+            s: {
+                x: pos.x,
+                y: pos.y + CELL_PER_TILE
+            },
+            w: {
+                x: pos.x - CELL_PER_TILE,
+                y: pos.y
+            }
         }
+    }
+
+    illuminateTile(tile: Phaser.Tilemaps.Tile, tint: number): void {
+        tile.alpha = 1;
+        tile.tint = tint;
+    }
+
+    darkenTile(tile: Phaser.Tilemaps.Tile): void {
+        tile.tint = 0xffffff;
+        tile.alpha = 0;
+    }
+
+    fadeFromMemory(pos: Phaser.Types.Math.Vector2Like): void {
+        const compass = this.getCompassIndexes(pos);
+
+        Object.keys(compass).forEach(dir => {
+            const compassPos = compass[dir];
+
+            if (this.objectsAreAdjacent(pos, compassPos)) {
+                const tiles1 = this.getCellsAtTile(compassPos)
+                tiles1.forEach(tile => {
+                    if (!tile) {
+                        return;
+                    }
+                    this.darkenTile(tile);
+                });
+            }
+        })
+
+        const tiles = this.getCellsAtTile(pos);
+        tiles.forEach(tile => this.darkenTile(tile));
     }
 
     getTileAt(position: Phaser.Types.Math.Vector2Like): Phaser.Tilemaps.Tile {
@@ -156,4 +216,11 @@ export interface ValidMovePositions {
     e: boolean;
     s: boolean;
     w: boolean;
+}
+
+export interface CompassIndexes {
+    n: Phaser.Types.Math.Vector2Like;
+    e: Phaser.Types.Math.Vector2Like;
+    s: Phaser.Types.Math.Vector2Like;
+    w: Phaser.Types.Math.Vector2Like;
 }

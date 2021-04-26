@@ -205,7 +205,7 @@ export class Game extends Scene {
 
     if (this.playerMemory.length > MEMORY_FORGOT) {
       const tileForgotten = this.playerMemory.shift();
-      this.map.fadeFromMemory(tileForgotten, true);
+      this.map.fadeFromMemory(tileForgotten);
     }
 
     if (this.minotaur) {

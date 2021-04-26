@@ -339,6 +339,7 @@ export class Game extends Scene {
       }
     } else if (this.searchButton.y !== SEARCH_BUTTON_Y_OFFSCREEN) {
       this.collectTreasure();
+      this.minotaur.continueOnPath(this.player.tilePosition);
     }
   }
 

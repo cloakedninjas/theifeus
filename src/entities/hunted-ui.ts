@@ -140,7 +140,7 @@ export class HuntedUI {
         this.tween = this.scene.tweens.addCounter({
             from,
             to: 0,
-            onUpdate: (tween: any, target: any) => {
+            onUpdate: (_tween, target: any) => {
                 const remainingWidth = WIDTH * target.value;
                 this.meter.clear();
                 this.meter.fillRect(this.left, this.y, remainingWidth, BAR_HEIGHT);

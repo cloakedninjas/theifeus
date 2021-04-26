@@ -127,10 +127,6 @@ export class Game extends Scene {
 
     this.noiseMeter.bringToTop();
 
-    const startPoint: Phaser.Tilemaps.Tile = Phaser.Utils.Array.GetRandom(this.map.exits);
-
-    this.player.setTilePosition(startPoint.x, startPoint.y);
-
     this.setupCameraControls();
     this.setupKeyboardControls();
 
@@ -174,6 +170,10 @@ export class Game extends Scene {
   private startGame(): void {
     this.sound.play('entermaze');
     this.playMusic();
+
+    const startPoint: Phaser.Tilemaps.Tile = Phaser.Utils.Array.GetRandom(this.map.exits);
+
+    this.player.setTilePosition(startPoint.x, startPoint.y);
     this.playerMoved(this.player.tilePosition);
   }
 
@@ -300,25 +300,25 @@ export class Game extends Scene {
     const tileEast = this.map.getTileAt({ x: pos.x + 1, y: pos.y });
     const tileWest = this.map.getTileAt({ x: pos.x - 1, y: pos.y });
 
-    if (tileNorth.index === CELL_WALKABLE || this.map.isExit({ x: tileNorth.x, y: tileNorth.y })) {
+    if (CELL_WALKABLE.includes(tileNorth.index) || this.map.isExit({ x: tileNorth.x, y: tileNorth.y })) {
       this.arrows.n.setFrame(ARROW_FRAME_ACTIVE);
     } else {
       this.arrows.n.setFrame(ARROW_FRAME_DISABLED);
     }
 
-    if (tileSouth.index === CELL_WALKABLE || this.map.isExit({ x: tileSouth.x, y: tileSouth.y })) {
+    if (CELL_WALKABLE.includes(tileSouth.index) || this.map.isExit({ x: tileSouth.x, y: tileSouth.y })) {
       this.arrows.s.setFrame(ARROW_FRAME_ACTIVE);
     } else {
       this.arrows.s.setFrame(ARROW_FRAME_DISABLED);
     }
 
-    if (tileEast.index === CELL_WALKABLE || this.map.isExit({ x: tileEast.x, y: tileEast.y })) {
+    if (CELL_WALKABLE.includes(tileEast.index) || this.map.isExit({ x: tileEast.x, y: tileEast.y })) {
       this.arrows.e.setFrame(ARROW_FRAME_ACTIVE);
     } else {
       this.arrows.e.setFrame(ARROW_FRAME_DISABLED);
     }
 
-    if (tileWest.index === CELL_WALKABLE || this.map.isExit({ x: tileWest.x, y: tileWest.y })) {
+    if (CELL_WALKABLE.includes(tileWest.index) || this.map.isExit({ x: tileWest.x, y: tileWest.y })) {
       this.arrows.w.setFrame(ARROW_FRAME_ACTIVE);
     } else {
       this.arrows.w.setFrame(ARROW_FRAME_DISABLED);

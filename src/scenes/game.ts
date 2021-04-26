@@ -130,7 +130,6 @@ export class Game extends Scene {
     const startPoint: Phaser.Tilemaps.Tile = Phaser.Utils.Array.GetRandom(this.map.exits);
 
     this.player.setTilePosition(startPoint.x, startPoint.y);
-    this.playerMoved(this.player.tilePosition);
 
     this.setupCameraControls();
     this.setupKeyboardControls();
@@ -144,7 +143,7 @@ export class Game extends Scene {
       tween: null
     };
 
-    this.playMusic();
+    this.startGame();
 
     // debug
     window['scene'] = this;
@@ -170,11 +169,12 @@ export class Game extends Scene {
     wasd['D'].on('down', () => this.handleDirPress('e'));
 
     cursors.space.on('up', () => this.performAction());
+  }
 
-    // debug
-    this.input.on('pointerup', () => {
-      //this.gameOver(false);
-    });
+  private startGame(): void {
+    this.sound.play('entermaze');
+    this.playMusic();
+    this.playerMoved(this.player.tilePosition);
   }
 
   private handleDirPress(dir: string): void {
@@ -585,6 +585,8 @@ export class Game extends Scene {
 
   private gameOver(alive: boolean) {
     this.music.currentTrack.stop();
+    this.sound.play('endencounter');
+
     this.scene.start('ScoreScene', {
       treasures: this.treasureCollected,
       alive

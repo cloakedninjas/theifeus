@@ -92,7 +92,7 @@
 	{
 		"name": "Heart of the Minotaur",
 		"description": "The fabled jewel of the Minotaur's labyrinth. Doom awaits whomsoever should claim it. On the other hand, so do fame and fortune so I'll take my chances!",
-		"noise": 6,
+		"noise": 8,
 		"value": 3000,
 		"heart": true
 	}

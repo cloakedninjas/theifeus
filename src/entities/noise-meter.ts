@@ -1,5 +1,5 @@
 import { GameObjects, Scene, Tweens } from 'phaser';
-import { NOISE_MARKER_SPEED, NOISE_MOVE_LOUD, NOISE_MOVE_QUIET, NOISE_SAFE_WIDTH, NOISE_SPAWN_MINOTAUR } from '../config';
+import { NOISE_MARKER_SPEED_INITIAL, NOISE_MARKER_SPEED_MIN, NOISE_MARKER_SPEED_REDUCE, NOISE_MOVE_LOUD, NOISE_MOVE_QUIET, NOISE_SAFE_WIDTH_INITIAL, NOISE_SAFE_WIDTH_MIN, NOISE_SAFE_WIDTH_REDUCE, NOISE_SPAWN_MINOTAUR } from '../config';
 
 const WIDTH = 300;
 const HEIGHT = 35;
@@ -8,7 +8,7 @@ export class NoiseMeter {
     scene: Scene;
     bg: GameObjects.Graphics;
     safeZone: GameObjects.Graphics;
-    paddle: GameObjects.Image;
+    marker: GameObjects.Image;
     badgeLoud: GameObjects.Image;
     badgeQuiet: GameObjects.Image;
     tween: Tweens.Tween;
@@ -20,8 +20,9 @@ export class NoiseMeter {
         min: 0,
         max: 0
     };
-    safeWidth: number = NOISE_SAFE_WIDTH;
+    safeWidth: number = NOISE_SAFE_WIDTH_INITIAL;
     noiseLevel = 0;
+    markerSpeed = NOISE_MARKER_SPEED_INITIAL;
     noiseThreshold: Phaser.Events.EventEmitter;
     thresholdReached = false;
     canEmit = true;
@@ -38,11 +39,11 @@ export class NoiseMeter {
         this.bg = new GameObjects.Graphics(scene);
         scene.add.existing(this.bg);
 
-        this.paddle = scene.add.image(this.left, this.y, 'marker');
-        this.paddle.setOrigin(0.5, 0);
+        this.marker = scene.add.image(this.left, this.y, 'marker');
+        this.marker.setOrigin(0.5, 0);
 
         this.bg.setScrollFactor(0);
-        this.paddle.setScrollFactor(0);
+        this.marker.setScrollFactor(0);
 
         this.badgeLoud = scene.add.image(568, 721, 'loud');
         this.badgeLoud.setScrollFactor(0);
@@ -57,7 +58,7 @@ export class NoiseMeter {
     }
 
     bringToTop(): void {
-        this.scene.children.bringToTop(this.paddle);
+        this.scene.children.bringToTop(this.marker);
         this.scene.children.bringToTop(this.badgeQuiet);
         this.scene.children.bringToTop(this.badgeLoud);
     }
@@ -65,21 +66,28 @@ export class NoiseMeter {
     start(): void {
         // safe zone
         this.generateSafeZone();
+        this.startMarker();
+        this.show();
+    }
 
+    startMarker(): void {
+        if (this.tween) {
+            this.tween.stop();
+        }
+
+        this.marker.x = this.left;
         this.tween = this.scene.tweens.add({
-            targets: this.paddle,
+            targets: this.marker,
             x: this.right,
             ease: Phaser.Math.Easing.Linear,
             yoyo: true,
             repeat: -1,
-            duration: NOISE_MARKER_SPEED
+            duration: this.markerSpeed
         });
-
-        this.show();
     }
 
     getNoiseReading(): boolean {
-        const isQuiet = this.paddle.x > this.safeArea.min && this.paddle.x < this.safeArea.max;
+        const isQuiet = this.marker.x > this.safeArea.min && this.marker.x < this.safeArea.max;
         let badge: GameObjects.Image;
 
         if (isQuiet) {
@@ -125,19 +133,19 @@ export class NoiseMeter {
 
     stop(): boolean {
         this.tween.stop();
-        const x = this.paddle.x + this.left;
+        const x = this.marker.x + this.left;
 
-        return x > this.safeArea.min && x < this.safeArea.max - this.paddle.width;
+        return x > this.safeArea.min && x < this.safeArea.max - this.marker.width;
     }
 
     hide(): void {
         this.bg.visible = false;
-        this.paddle.visible = false;
+        this.marker.visible = false;
     }
 
     show(): void {
         this.bg.visible = true;
-        this.paddle.visible = true;
+        this.marker.visible = true;
     }
 
     disableThresholds(): void {
@@ -166,5 +174,19 @@ export class NoiseMeter {
 
         this.bg.fillStyle(0x00A651);
         this.bg.fillRect(this.safeArea.min, this.y, this.safeWidth, HEIGHT);
+    }
+
+    makeItHarder(): void {
+        if (this.markerSpeed > NOISE_MARKER_SPEED_MIN) {
+            this.markerSpeed -= NOISE_MARKER_SPEED_REDUCE;
+
+            this.startMarker();
+        }
+
+        if (this.safeWidth >= NOISE_SAFE_WIDTH_MIN) {
+            this.safeWidth -= NOISE_SAFE_WIDTH_REDUCE;
+        }
+
+        this.generateSafeZone();
     }
 }

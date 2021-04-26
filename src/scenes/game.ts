@@ -55,7 +55,7 @@ export class Game extends Scene {
     currentTrack: Phaser.Sound.BaseSound,
     tween: Phaser.Tweens.Tween
   };
-  firstTimeHunted = true;
+  huntedCount = 0;
 
   constructor() {
     super({
@@ -339,7 +339,9 @@ export class Game extends Scene {
       }
     } else if (this.searchButton.y !== SEARCH_BUTTON_Y_OFFSCREEN) {
       this.collectTreasure();
-      this.minotaur.continueOnPath(this.player.tilePosition);
+      if (this.minotaur) {
+        this.minotaur.continueOnPath(this.player.tilePosition);
+      }
     }
   }
 
@@ -390,9 +392,13 @@ export class Game extends Scene {
 
   private showHuntedUI(): void {
     this.canMove = false;
+    this.huntedCount++;
 
-    this.huntedUI = new HuntedUI(this, this.noiseMeter, this.firstTimeHunted);
-    this.firstTimeHunted = false;
+    this.huntedUI = new HuntedUI(this, this.noiseMeter, this.huntedCount === 1);
+
+    if (this.huntedCount >= 2) {
+      this.noiseMeter.makeItHarder();
+    }
 
     this.huntedUI.result.on('success', () => {
       this.huntedUI.destroy();

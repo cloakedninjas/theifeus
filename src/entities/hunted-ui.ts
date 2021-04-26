@@ -13,7 +13,6 @@ export class HuntedUI {
     left: number;
     right: number;
     meter: GameObjects.Graphics;
-    safeZone: GameObjects.Graphics;
     marker: GameObjects.Sprite;
     result: Phaser.Events.EventEmitter;
     timeLeft = HUNTED_INITIAL_TIMEOUT / 2;

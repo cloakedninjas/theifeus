@@ -85,6 +85,7 @@ export class NoiseMeter {
         if (isQuiet) {
             this.noiseLevel -= NOISE_MOVE_QUIET;
             badge = this.badgeQuiet;
+            this.generateSafeZone();
         } else {
             this.noiseLevel += NOISE_MOVE_LOUD;
             badge = this.badgeLoud;
@@ -150,7 +151,6 @@ export class NoiseMeter {
         this.canEmit = true;
         this.thresholdReached = false;
         this.noiseLevel = 0;
-        this.generateSafeZone();
     }
 
     generateSafeZone(): void {

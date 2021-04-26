@@ -13,7 +13,7 @@ export const MINOTAUR_MOVE_TIME = 300;
 
 export const MEMORY_FORGOT = 8;
 
-export const NOISE_MARKER_SPEED = 1500;
+export const NOISE_MARKER_SPEED = 1200;
 export const NOISE_SPAWN_MINOTAUR = 6;
 export const NOISE_MOVE_QUIET = 0.3;
 export const NOISE_MOVE_LOUD = 1;

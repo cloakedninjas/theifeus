@@ -334,25 +334,12 @@ export class Game extends Scene {
         this.huntedUI.addTime();
       } else {
         this.huntedUI.removeTime();
+        this.sound.play(`grunt${Math.ceil(Math.random() * 4)}`);
       }
     } else if (this.searchButton.y !== SEARCH_BUTTON_Y_OFFSCREEN) {
       this.collectTreasure();
     }
   }
-
-  /* private searchRoom(): void {
-    const currentTile = this.map.getTileAt(this.player.tilePosition);
-
-    if (currentTile.properties.searched) {
-      console.log('already searched');
-    } else {
-      if (Math.random() >= PROB_FIND_TREASURE) {
-        //this.treasureCollected += TREASURES
-      }
-    }
-
-    currentTile.properties.searched = true;
-  } */
 
   private spawnMinotaur(): void {
     if (!this.minotaur) {

@@ -1,5 +1,5 @@
 import { GameObjects, Scene, Tweens } from 'phaser';
-import { HIDE_FAIL_TIME, HIDE_INITIAL_TIMEOUT, HIDE_SUCCESS_TIME } from '../config';
+import { HUNTED_DELAY, HUNTED_FAIL_PENALTY, HUNTED_FIRST_DELAY, HUNTED_INITIAL_TIMEOUT, HUNTED_SUCCESS_TIME } from '../config';
 import { INTERACTIVE } from '../lib/types';
 import { NoiseMeter } from './noise-meter';
 
@@ -16,17 +16,19 @@ export class HuntedUI {
     safeZone: GameObjects.Graphics;
     marker: GameObjects.Sprite;
     result: Phaser.Events.EventEmitter;
-    timeLeft = HIDE_INITIAL_TIMEOUT / 2;
+    timeLeft = HUNTED_INITIAL_TIMEOUT / 2;
     tween: Tweens.Tween;
     bg: GameObjects.Image;
     aura: GameObjects.Image;
     auraTween: Tweens.Tween;
     button: GameObjects.Image;
     noiseMeter: NoiseMeter;
+    firstTime: boolean;
 
-    constructor(scene: Scene, noiseMeter: NoiseMeter) {
+    constructor(scene: Scene, noiseMeter: NoiseMeter, firstTime: boolean) {
         this.scene = scene;
         this.noiseMeter = noiseMeter;
+        this.firstTime = firstTime;
 
         this.x = scene.cameras.main.width / 2;
         this.y = 570;
@@ -45,7 +47,8 @@ export class HuntedUI {
         this.meter = new GameObjects.Graphics(scene);
         scene.add.existing(this.meter);
         this.meter.setScrollFactor(0);
-        this.meter.fillStyle(0xcc0000);
+        this.meter.fillStyle(0xED2224);
+        this.meter.fillRect(this.left, this.y, WIDTH * 0.5, BAR_HEIGHT);
         this.meter.visible = false;
 
         this.marker = new GameObjects.Sprite(scene, this.x, this.y, 'monster_face');
@@ -84,37 +87,59 @@ export class HuntedUI {
             ease: Phaser.Math.Easing.Sine.Out,
             duration: 300,
             onComplete: () => {
-                this.startCountdown();
+                this.startCountdown(this.firstTime ? HUNTED_FIRST_DELAY : HUNTED_DELAY);
             }
         });
     }
 
     addTime(): void {
         this.tween.stop();
-        this.timeLeft += HIDE_SUCCESS_TIME;
+        this.timeLeft += HUNTED_SUCCESS_TIME;
 
-        if (this.timeLeft >= HIDE_INITIAL_TIMEOUT) {
+        if (this.timeLeft >= HUNTED_INITIAL_TIMEOUT) {
             this.result.emit('success');
         } else {
-            this.startCountdown();
+            this.startCountdown(0);
         }
     }
 
     removeTime(): void {
         this.tween.stop();
-        this.timeLeft -= HIDE_FAIL_TIME;
+        this.timeLeft -= HUNTED_FAIL_PENALTY;
 
         if (this.timeLeft < 0) {
             this.result.emit('fail');
         } else {
-            this.startCountdown();
+            this.startCountdown(0);
         }
     }
 
-    startCountdown(): void {
+    startCountdown(delay: number): void {
         this.meter.visible = true;
         this.marker.visible = true;
         this.button.visible = true;
+
+        const from = this.timeLeft / HUNTED_INITIAL_TIMEOUT;
+
+        this.tween = this.scene.tweens.addCounter({
+            from,
+            to: 0,
+            onUpdate: (_tween, target: any) => {
+                const remainingWidth = WIDTH * target.value;
+                this.meter.clear();
+                this.meter.fillStyle(0xED2224);
+                this.meter.fillRect(this.left, this.y, remainingWidth, BAR_HEIGHT);
+
+                this.marker.x = this.left + remainingWidth;
+
+                this.timeLeft = (HUNTED_INITIAL_TIMEOUT * target.value);
+            },
+            onComplete: () => {
+                this.result.emit('fail');
+            },
+            duration: this.timeLeft,
+            delay
+        });
 
         if (!this.auraTween) {
             this.auraTween = this.scene.tweens.add({
@@ -134,26 +159,6 @@ export class HuntedUI {
                 duration: 1000
             });
         }
-
-        const from = this.timeLeft / HIDE_INITIAL_TIMEOUT;
-
-        this.tween = this.scene.tweens.addCounter({
-            from,
-            to: 0,
-            onUpdate: (_tween, target: any) => {
-                const remainingWidth = WIDTH * target.value;
-                this.meter.clear();
-                this.meter.fillRect(this.left, this.y, remainingWidth, BAR_HEIGHT);
-
-                this.marker.x = this.left + remainingWidth;
-
-                this.timeLeft = (HIDE_INITIAL_TIMEOUT * target.value);
-            },
-            onComplete: () => {
-                this.result.emit('fail');
-            },
-            duration: this.timeLeft
-        });
     }
 
     destroy(): void {

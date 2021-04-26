@@ -55,6 +55,7 @@ export class Game extends Scene {
     currentTrack: Phaser.Sound.BaseSound,
     tween: Phaser.Tweens.Tween
   };
+  firstTimeHunted = true;
 
   constructor() {
     super({
@@ -399,7 +400,9 @@ export class Game extends Scene {
 
   private showHuntedUI(): void {
     this.canMove = false;
-    this.huntedUI = new HuntedUI(this, this.noiseMeter);
+    
+    this.huntedUI = new HuntedUI(this, this.noiseMeter, this.firstTimeHunted);
+    this.firstTimeHunted = false;
 
     this.huntedUI.result.on('success', () => {
       this.huntedUI.destroy();

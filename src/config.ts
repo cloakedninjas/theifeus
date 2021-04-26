@@ -19,9 +19,11 @@ export const NOISE_MOVE_QUIET = 0.3;
 export const NOISE_MOVE_LOUD = 1;
 export const NOISE_SAFE_WIDTH = 100;
 
-export const HIDE_INITIAL_TIMEOUT = 6000;
-export const HIDE_SUCCESS_TIME = 1500;
-export const HIDE_FAIL_TIME = 500;
+export const HUNTED_FIRST_DELAY = 1500;
+export const HUNTED_DELAY = 1000;
+export const HUNTED_INITIAL_TIMEOUT = 6000;
+export const HUNTED_SUCCESS_TIME = 1500;
+export const HUNTED_FAIL_PENALTY = 500;
 
 export const MAP_VARIANTS = 4;
 

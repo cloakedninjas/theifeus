@@ -25,12 +25,17 @@ export default class Score extends Scene {
 
     create(): void {
         let loot = 0;
+        let diamondValue = 0;
 
         this.treasures.forEach(treasure => {
-            loot += treasure.value;
+            if (!treasure.heart) {
+                loot += treasure.value;
+            } else {
+                diamondValue = treasure.value;
+            }
         });
 
-        const totalScore = loot * 2;
+        const totalScore = loot + diamondValue;
 
         // bg
         const bg = this.add.image(0, 0, 'end_bg');

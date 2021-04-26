@@ -5,7 +5,7 @@ import { Minotaur } from '../entities/minotaur';
 import { Player } from '../entities/player';
 import { NoiseMeter } from '../entities/noise-meter';
 import { HuntedUI } from '../entities/hunted-ui';
-import { Treasure } from '../lib/types';
+import { DIR_VECTOR, Treasure } from '../lib/types';
 
 const ARROW_FRAME_ACTIVE = 0;
 const ARROW_FRAME_HOVER = 1;
@@ -106,6 +106,8 @@ export class Game extends Scene {
           useHandCursor: true
         });
 
+        arrow.on('pointerdown', () => this.handleDirPress(key));
+
         arrow.on('pointerover', () => {
           if (arrow.frame.name as unknown as number === ARROW_FRAME_ACTIVE) {
             arrow.setData('prev-frame', arrow.frame.name);
@@ -155,15 +157,15 @@ export class Game extends Scene {
     const cursors = this.input.keyboard.createCursorKeys();
     const wasd = this.input.keyboard.addKeys('W,S,A,D');
 
-    cursors.down.on('up', () => this.handleDirPress(0, 1));
-    cursors.up.on('up', () => this.handleDirPress(0, -1));
-    cursors.left.on('up', () => this.handleDirPress(-1, 0));
-    cursors.right.on('up', () => this.handleDirPress(1, 0));
+    cursors.up.on('up', () => this.handleDirPress('n'));
+    cursors.right.on('up', () => this.handleDirPress('e'));
+    cursors.down.on('up', () => this.handleDirPress('s'));
+    cursors.left.on('up', () => this.handleDirPress('w'));
 
-    wasd['W'].on('down', () => this.handleDirPress(0, -1));
-    wasd['A'].on('down', () => this.handleDirPress(-1, 0));
-    wasd['S'].on('down', () => this.handleDirPress(0, 1));
-    wasd['D'].on('down', () => this.handleDirPress(1, 0));
+    wasd['W'].on('down', () => this.handleDirPress('n'));
+    wasd['A'].on('down', () => this.handleDirPress('w'));
+    wasd['S'].on('down', () => this.handleDirPress('s'));
+    wasd['D'].on('down', () => this.handleDirPress('e'));
 
     cursors.space.on('up', () => this.performAction());
 
@@ -173,15 +175,17 @@ export class Game extends Scene {
     });
   }
 
-  private handleDirPress(vectorX: number, vectorY: number): void {
+  private handleDirPress(dir: string): void {
+    const vector = DIR_VECTOR[dir];
+
     if (this.leave.visible) {
-      if (vectorX === -1) {
+      if (vector.x === -1) {
         this.cameras.main.fadeOut(500, undefined, undefined, undefined, (_camera, i: number) => {
           if (i === 1) {
             this.gameOver(true);
           }
         });
-      } else if (vectorX === 1) {
+      } else if (vector.x === 1) {
         this.tweens.add({
           targets: this.leave.bg,
           alpha: 0,
@@ -207,11 +211,11 @@ export class Game extends Scene {
       return;
     }
 
-    this.player.flipX = vectorX === 1;
+    this.player.flipX = vector.x === 1;
 
     const destinationPosition: Phaser.Types.Math.Vector2Like = {
-      x: this.player.tilePosition.x + vectorX,
-      y: this.player.tilePosition.y + vectorY
+      x: this.player.tilePosition.x + vector.x,
+      y: this.player.tilePosition.y + vector.y
     };
 
     if (this.map.isExiting(this.player.tilePosition, destinationPosition)) {
@@ -221,8 +225,8 @@ export class Game extends Scene {
 
     if (this.map.isWalkableTile(destinationPosition)) {
       this.requestedMoveLocation = {
-        x: this.player.tilePosition.x + (vectorX * CELL_PER_TILE),
-        y: this.player.tilePosition.y + (vectorY * CELL_PER_TILE)
+        x: this.player.tilePosition.x + (vector.x * CELL_PER_TILE),
+        y: this.player.tilePosition.y + (vector.y* CELL_PER_TILE)
       };
 
       const isQuiet = this.noiseMeter.getNoiseReading();
@@ -511,7 +515,6 @@ export class Game extends Scene {
       const random = Math.ceil(Math.random() * 2);
       this.music.currentTrack = this.music[`ambient${random}`];
     }
-
 
     this.music.currentTrack.play({
       loop: true,

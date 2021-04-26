@@ -41,7 +41,7 @@ export default class Score extends Scene {
         const bg = this.add.image(0, 0, 'end_bg');
         bg.setOrigin(0, 0);
 
-        if (totalScore > 0) {
+        if (loot > 0) {
             this.add.image(878, 588, 'coins');
         }
 

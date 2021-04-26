@@ -28,6 +28,7 @@ export class Game extends Scene {
   canMove = true;
   huntedUI: HuntedUI;
   ui: Phaser.GameObjects.Image;
+  treasureUIGroup: Phaser.GameObjects.Group;
   arrows: { n: Phaser.GameObjects.Sprite; e: Phaser.GameObjects.Sprite; s: Phaser.GameObjects.Sprite; w: Phaser.GameObjects.Sprite; };
   searchButton: Phaser.GameObjects.Image;
   searchButtonTween: Phaser.Tweens.Tween;
@@ -66,6 +67,7 @@ export class Game extends Scene {
     this.bg.setScrollFactor(0);
     this.bg.setOrigin(0, 0);
 
+    this.treasureUIGroup = this.add.group();
     this.map = new Map(this);
 
     this.treasures = this.cache.json.get('treasures');
@@ -426,6 +428,8 @@ export class Game extends Scene {
 
   private bringUIToFront() {
     this.children.bringToTop(this.ui);
+    //this.children.bringToTop(this.treasureUIGroup);
+    this.treasureUIGroup.getChildren().forEach(child => this.children.bringToTop(child));
     this.children.bringToTop(this.arrows.n);
     this.children.bringToTop(this.arrows.e);
     this.children.bringToTop(this.arrows.s);
@@ -437,12 +441,25 @@ export class Game extends Scene {
 
   private collectTreasure(): void {
     let treasure;
+    let icon;
 
     if (this.treasureAtTile === CELL_DIAMOND) {
       treasure = this.treasures.pop();
+      icon = new Phaser.GameObjects.Image(this, 120, 684, 'heart');
     } else {
       treasure = this.treasures.shift();
+
+      const collected = this.treasureCollected.length - (this.treasureCollected.find(t => Boolean(t.heart)) ? 1 : 0);
+
+      const x = ((collected % 5) * 40) + 761;
+      const y = (Math.floor(collected / 5) * 40) + 637
+      icon = new Phaser.GameObjects.Image(this, x, y, 'coin');
     }
+
+    this.treasureUIGroup.add(icon, true);
+    icon.setScrollFactor(0);
+
+    this.children.bringToTop(this.searchButton);
 
     this.treasureCollected.push(treasure);
 

@@ -32,6 +32,15 @@ export class Game extends Scene {
   searchButton: Phaser.GameObjects.Image;
   searchButtonTween: Phaser.Tweens.Tween;
   bg: Phaser.GameObjects.TileSprite;
+  leave: {
+    bg: Phaser.GameObjects.Graphics;
+    modal: Phaser.GameObjects.Image;
+    visible: boolean;
+  } = {
+      bg: null,
+      modal: null,
+      visible: false
+    };
 
   constructor() {
     super({
@@ -124,11 +133,18 @@ export class Game extends Scene {
 
   private setupKeyboardControls() {
     const cursors = this.input.keyboard.createCursorKeys();
+    const wasd = this.input.keyboard.addKeys('W,S,A,D');
 
-    cursors.down.on('up', () => this.tryMovingPlayer(0, 1));
-    cursors.up.on('up', () => this.tryMovingPlayer(0, -1));
-    cursors.left.on('up', () => this.tryMovingPlayer(-1, 0));
-    cursors.right.on('up', () => this.tryMovingPlayer(1, 0));
+    cursors.down.on('up', () => this.handleDirPress(0, 1));
+    cursors.up.on('up', () => this.handleDirPress(0, -1));
+    cursors.left.on('up', () => this.handleDirPress(-1, 0));
+    cursors.right.on('up', () => this.handleDirPress(1, 0));
+
+    wasd['W'].on('down', () => this.handleDirPress(0, -1));
+    wasd['A'].on('down', () => this.handleDirPress(-1, 0));
+    wasd['S'].on('down', () => this.handleDirPress(0, 1));
+    wasd['D'].on('down', () => this.handleDirPress(1, 0));
+
     cursors.space.on('up', () => this.performAction());
 
     // debug
@@ -137,7 +153,36 @@ export class Game extends Scene {
     });
   }
 
-  private tryMovingPlayer(vectorX: number, vectorY: number): void {
+  private handleDirPress(vectorX: number, vectorY: number): void {
+    if (this.leave.visible) {
+      if (vectorX === -1) {
+        this.cameras.main.fadeOut(500, undefined, undefined, undefined, (_camera, i: number) => {
+          if (i === 1) {
+            this.gameOver(true);
+          }
+        });
+      } else if (vectorX === 1) {
+        this.tweens.add({
+          targets: this.leave.bg,
+          alpha: 0,
+          duration: 500
+        });
+
+        this.tweens.add({
+          targets: this.leave.modal,
+          y: this.cameras.main.height,
+          duration: 300,
+          ease: Phaser.Math.Easing.Sine.In,
+          onComplete: () => {
+            this.canMove = true;
+            this.leave.visible = false;
+          }
+        });
+      }
+
+      return;
+    }
+
     if (!this.canMove || this.playerMoveTween?.isPlaying()) {
       return;
     }
@@ -150,8 +195,7 @@ export class Game extends Scene {
     };
 
     if (this.map.isExiting(this.player.tilePosition, destinationPosition)) {
-      console.log('is exit');
-      // prompt to leave
+      this.showExitPrompt();
       return;
     }
 
@@ -381,12 +425,45 @@ export class Game extends Scene {
 
   private hideSearchButton(): void {
     this.searchButtonTween.stop(1);
-      this.searchButtonTween = this.tweens.add({
-        targets: this.searchButton,
-        y: SEARCH_BUTTON_Y_OFFSCREEN,
-        ease: Phaser.Math.Easing.Expo.In,
-        duration: 300
-      });
+    this.searchButtonTween = this.tweens.add({
+      targets: this.searchButton,
+      y: SEARCH_BUTTON_Y_OFFSCREEN,
+      ease: Phaser.Math.Easing.Expo.In,
+      duration: 300
+    });
+  }
+
+  private showExitPrompt(): void {
+    this.canMove = false;
+
+    if (!this.leave.bg) {
+      const bg = this.add.graphics();
+      bg.fillStyle(0, 0.6);
+      bg.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
+      bg.setScrollFactor(0);
+      bg.alpha = 0;
+      this.leave.bg = bg;
+
+      const modal = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'exit');
+      modal.setOrigin(0.5, 0);
+      modal.setScrollFactor(0);
+      this.leave.modal = modal;
+    }
+
+    this.leave.visible = true;
+
+    this.tweens.add({
+      targets: this.leave.bg,
+      alpha: 1,
+      duration: 500
+    });
+
+    this.tweens.add({
+      targets: this.leave.modal,
+      y: this.cameras.main.height - this.leave.modal.height,
+      duration: 300,
+      ease: Phaser.Math.Easing.Sine.Out
+    });
   }
 
   private gameOver(alive: boolean) {

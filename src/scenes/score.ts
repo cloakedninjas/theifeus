@@ -101,7 +101,6 @@ export default class Score extends Scene {
         graphics.fillStyle(0xffffff);
         graphics.fillRect(531, 275, 66, 70);
 
-
         graphics.setInteractive(new Phaser.Geom.Rectangle(531, 275, 66, 70), Phaser.Geom.Rectangle.Contains);
         graphics.on(Phaser.Input.Events.POINTER_DOWN, () => {
             document.location.reload();

@@ -332,6 +332,7 @@ export class Game extends Scene {
 
       if (isQuiet) {
         this.huntedUI.addTime();
+        this.sound.play('hidesuccess');
       } else {
         this.huntedUI.removeTime();
         this.sound.play(`grunt${Math.ceil(Math.random() * 4)}`);
@@ -449,7 +450,7 @@ export class Game extends Scene {
       const y = (Math.floor(collected / 5) * 40) + 637
       icon = new Phaser.GameObjects.Image(this, x, y, 'coin');
       this.sound.play('treasure', {
-        volume: 0.75
+        volume: 0.5
       });
 
       if (treasure.noise && !this.noiseMeter.getNoiseReading()) {

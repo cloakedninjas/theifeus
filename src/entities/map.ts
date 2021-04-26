@@ -36,7 +36,6 @@ export class Map {
 
         const roomLayer = this.tilemap.createLayer(`rooms-${this.mapIndex}`, tileset);
 
-        // debug
         roomLayer.visible = false;
 
         // extract room items

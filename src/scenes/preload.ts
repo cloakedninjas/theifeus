@@ -45,14 +45,10 @@ export default class Preload extends Scene {
       });
     });
 
-    /* this.load.image('labyrinth-tiles', 'assets/map/labyrinth-tiles-32.png');
-    this.load.tilemapTiledJSON('labyrinth-tiles', 'assets/map/labyrinth-map.json'); */
-
     this.load.webfont('Mansalva', 'https://fonts.googleapis.com/css2?family=Mansalva&display=swap');
   }
 
   create(): void {
-    this.scene.start('GameScene');
-    //this.scene.start('MenuScene');
+    this.scene.start('MenuScene');
   }
 }

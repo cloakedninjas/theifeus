@@ -3,7 +3,6 @@ import { Treasure } from '../lib/types';
 import { FONT_NAME } from '../config';
 
 const FONT_COLOUR = 'white';
-const FONT_SIZE = '24px';
 const X_POS = 200;
 
 export default class Score extends Scene {
@@ -17,11 +16,7 @@ export default class Score extends Scene {
         });
     }
 
-    preload(): void {
-        //
-    }
-
-    init(data: any) {
+    init(data: any): void {
         window['scene'] = this;
         this.treasures = data.treasures;
         this.alive = data.alive;
@@ -41,12 +36,14 @@ export default class Score extends Scene {
         const bg = this.add.image(0, 0, 'end_bg');
         bg.setOrigin(0, 0);
 
-        this.add.image(878, 588, 'coins');
+        if (totalScore > 0) {
+            this.add.image(878, 588, 'coins');
+        }
 
         if (this.gotHeart) {
             this.add.image(600, 486, 'diamond');
         }
-        
+
         this.add.image(715, 377, this.alive ? 'alive' : 'dead');
         this.add.image(260, 80, this.alive ? 'escaped' : 'death');
 
@@ -108,6 +105,11 @@ export default class Score extends Scene {
         graphics.setInteractive(new Phaser.Geom.Rectangle(84, 606, 360, 75), Phaser.Geom.Rectangle.Contains);
         graphics.on(Phaser.Input.Events.POINTER_DOWN, () => {
             document.location.reload();
+        });
+
+        const music = this.sound.add('menu');
+        music.play({
+            volume: 1
         });
     }
 }

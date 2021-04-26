@@ -512,8 +512,10 @@ export class Game extends Scene {
       this.music.currentTrack = this.music[`ambient${random}`];
     }
 
-    (this.music.currentTrack as Phaser.Sound.WebAudioSound).volume = 1;
-    this.music.currentTrack.play();
+    this.music.currentTrack.play({
+      loop: true,
+      volume: 1
+    });
   }
 
   private gameOver(alive: boolean) {

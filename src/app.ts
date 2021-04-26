@@ -2,12 +2,13 @@ import 'phaser';
 import { WebFontLoaderPlugin } from 'phaser3-webfont-loader';
 import Boot from './scenes/boot';
 import Preload from './scenes/preload';
+import Menu from './scenes/menu';
 import { Game as GameScene } from './scenes/game';
 import Score from './scenes/score';
 
 const config: Phaser.Types.Core.GameConfig = {
   title: 'LD48',
-  scene: [Boot, Preload, GameScene, Score],
+  scene: [Boot, Preload, Menu, GameScene, Score],
   backgroundColor: '#000',
   scale: {
     mode: Phaser.Scale.FIT,

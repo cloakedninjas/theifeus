@@ -1,4 +1,4 @@
-import { GameObjects, Math, Scene, Tweens } from 'phaser';
+import { GameObjects, Scene, Tweens } from 'phaser';
 import { NOISE_MARKER_SPEED, NOISE_MOVE_LOUD, NOISE_MOVE_QUIET, NOISE_SAFE_WIDTH, NOISE_SPAWN_MINOTAUR } from '../config';
 
 const WIDTH = 300;
@@ -69,7 +69,7 @@ export class NoiseMeter {
         this.tween = this.scene.tweens.add({
             targets: this.paddle,
             x: this.right,
-            ease: Math.Easing.Linear,
+            ease: Phaser.Math.Easing.Linear,
             yoyo: true,
             repeat: -1,
             duration: NOISE_MARKER_SPEED
@@ -84,6 +84,7 @@ export class NoiseMeter {
 
         if (isQuiet) {
             this.noiseLevel -= NOISE_MOVE_QUIET;
+            this.noiseLevel = Math.max(0, this.noiseLevel);
             badge = this.badgeQuiet;
             this.generateSafeZone();
         } else {

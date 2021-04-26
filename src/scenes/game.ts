@@ -169,9 +169,8 @@ export class Game extends Scene {
   }
 
   private startGame(): void {
-    this.sound.add('entermaze')
-      .on('complete', () => this.playMusic())
-      .play();
+    this.sound.play('endencounter');
+    this.playMusic();
 
     const startPoint: Phaser.Tilemaps.Tile = Phaser.Utils.Array.GetRandom(this.map.exits);
 
@@ -411,6 +410,7 @@ export class Game extends Scene {
       this.noiseMeter.reset();
       this.canMove = true;
       this.minotaurWalkAway();
+      this.sound.play('endencounter');
     });
 
     this.huntedUI.result.on('fail', () => {
@@ -601,7 +601,7 @@ export class Game extends Scene {
 
   private gameOver(alive: boolean) {
     this.music.currentTrack.stop();
-    this.sound.play('endencounter');
+    this.sound.play('superdead');
 
     this.scene.start('ScoreScene', {
       treasures: this.treasureCollected,

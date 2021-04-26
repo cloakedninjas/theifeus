@@ -63,16 +63,8 @@ export class NoiseMeter {
     }
 
     start(): void {
-        //bg
-        this.bg.fillStyle(0xC2B59B);
-        this.bg.fillRect(this.left, this.y, WIDTH, HEIGHT);
-
         // safe zone
-        this.safeArea.min = Phaser.Math.Between(this.left, this.right - this.safeWidth);
-        this.safeArea.max = this.safeArea.min + this.safeWidth;
-
-        this.bg.fillStyle(0x00A651);
-        this.bg.fillRect(this.safeArea.min, this.y, this.safeWidth, HEIGHT);
+        this.generateSafeZone();
 
         this.tween = this.scene.tweens.add({
             targets: this.paddle,
@@ -158,5 +150,20 @@ export class NoiseMeter {
         this.canEmit = true;
         this.thresholdReached = false;
         this.noiseLevel = 0;
+        this.generateSafeZone();
+    }
+
+    generateSafeZone(): void {
+        this.safeArea.min = Phaser.Math.Between(this.left, this.right - this.safeWidth);
+        this.safeArea.max = this.safeArea.min + this.safeWidth;
+
+        this.bg.clear();
+
+        //bg
+        this.bg.fillStyle(0xC2B59B);
+        this.bg.fillRect(this.left, this.y, WIDTH, HEIGHT);
+
+        this.bg.fillStyle(0x00A651);
+        this.bg.fillRect(this.safeArea.min, this.y, this.safeWidth, HEIGHT);
     }
 }

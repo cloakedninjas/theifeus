@@ -20,12 +20,12 @@ export class Map {
         this.scene = scene;
 
         this.tilemap = this.scene.make.tilemap({
-            key: 'labyrinth-tiles'
+            key: 'labyrinth_map'
         });
 
         this.mapIndex = Math.ceil(Math.random() * MAP_VARIANTS);
 
-        const tileset = this.tilemap.addTilesetImage('labyrinth-tiles-32', 'labyrinth-tiles');
+        const tileset = this.tilemap.addTilesetImage('labyrinth-tiles-32', 'labyrinth_tiles_32');
         const mapLayer = this.tilemap.createLayer(`map-${this.mapIndex}`, tileset);
 
         mapLayer.layer.data.forEach(row => {

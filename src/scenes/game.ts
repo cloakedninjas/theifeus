@@ -142,6 +142,8 @@ export class Game extends Scene {
       return;
     }
 
+    this.player.flipX = vectorX === 1;
+
     const destinationPosition: Phaser.Types.Math.Vector2Like = {
       x: this.player.tilePosition.x + vectorX,
       y: this.player.tilePosition.y + vectorY

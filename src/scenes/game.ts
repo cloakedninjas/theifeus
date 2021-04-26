@@ -65,6 +65,7 @@ export class Game extends Scene {
     this.searchButton.setInteractive({
       useHandCursor: true
     });
+    this.searchButton.on('pointerup', this.collectTreasure, this);
 
     this.arrows = {
       n: this.add.sprite(259, 613, 'arrow', 2),
@@ -183,13 +184,7 @@ export class Game extends Scene {
         duration: 300
       });
     } else if (this.searchButton.y !== SEARCH_BUTTON_Y_OFFSCREEN) {
-      this.searchButtonTween.stop(1);
-      this.searchButtonTween = this.tweens.add({
-        targets: this.searchButton,
-        y: SEARCH_BUTTON_Y_OFFSCREEN,
-        ease: Phaser.Math.Easing.Expo.In,
-        duration: 300
-      });
+      this.hideSearchButton();
     }
 
     // only keep 20 tiles in history
@@ -263,6 +258,8 @@ export class Game extends Scene {
       } else {
         this.huntedUI.removeTime();
       }
+    } else if (this.searchButton.y === SEARCH_BUTTON_Y) {
+      this.collectTreasure();
     }
   }
 
@@ -358,6 +355,28 @@ export class Game extends Scene {
     this.children.bringToTop(this.noiseMeter.badgeQuiet);
     this.children.bringToTop(this.noiseMeter.badgeLoud);
     this.children.bringToTop(this.searchButton);
+  }
+
+  private collectTreasure(): void {
+    const treasure = this.treasures.shift();
+    this.treasureCollected.push(treasure);
+
+    if (treasure.noise) {
+      this.noiseMeter.noiseLevel += treasure.noise;
+    }
+
+    this.map.removeTreasureAt(this.player.tilePosition);
+    this.hideSearchButton();
+  }
+
+  private hideSearchButton(): void {
+    this.searchButtonTween.stop(1);
+      this.searchButtonTween = this.tweens.add({
+        targets: this.searchButton,
+        y: SEARCH_BUTTON_Y_OFFSCREEN,
+        ease: Phaser.Math.Easing.Expo.In,
+        duration: 300
+      });
   }
 }
 

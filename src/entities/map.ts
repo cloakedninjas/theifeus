@@ -144,6 +144,10 @@ export class Map {
 
         return false;
     }
+
+    removeTreasureAt(pos: Phaser.Types.Math.Vector2Like): void {
+        this.tilemap.putTileAt(-1, pos.x, pos.y, true, 'rooms-1');
+    }
 }
 
 export interface ValidMovePositions {

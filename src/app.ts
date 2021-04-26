@@ -7,7 +7,7 @@ import { Game as GameScene } from './scenes/game';
 import Score from './scenes/score';
 
 const config: Phaser.Types.Core.GameConfig = {
-  title: 'LD48',
+  title: 'Thiefeus',
   scene: [Boot, Preload, Menu, GameScene, Score],
   backgroundColor: '#000',
   scale: {
